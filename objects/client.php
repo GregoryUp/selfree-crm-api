@@ -9,16 +9,21 @@ class Clients
     public function __construct($db)
     {
         $this->conn = $db;
+        $this->conn->setAttribute(PDO::ATTR_EMULATE_PREPARES,false);
     }
 
     public function view($client_id) {
         $client_id = intval($client_id);
-        if($client_id === 0) return 'NO_CLIENT';
+        if($client_id == 0) return 'NO_CLIENT';
 
-        $query = $this->conn->prepare("SELECT * FROM `{$this->table_name}` id = ':id' ORDER BY id DESC LIMIT 1");
+        $query = $this->conn->prepare("SELECT * FROM `{$this->table_name}` WHERE id = :id ORDER BY id DESC LIMIT 1");
+        $error = $this->conn->errorInfo();
+
+        if(!empty($error[1])) return 'QUERY_FAILED';
+
         $query->execute(['id' => $client_id]);
 
-        $client = $query->fetch();
+        $client = $query->fetch(PDO::FETCH_ASSOC);
 
         return $client;
     }
