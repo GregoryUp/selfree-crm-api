@@ -17,9 +17,7 @@ $client = new Clients($db);
 
 try {
     $client->create($name, $surname, $lastname, $sex, $phone, $date_birth);
+    echo 'OK';
 } catch (PDOException $e) {
     echo 'ERROR';
 }
-
-
-echo 'OK';

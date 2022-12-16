@@ -11,19 +11,41 @@ class Clients
         $this->conn = $db;
     }
 
-    public function page($page) {
+    public function view($client_id) {
+        $client_id = intval($client_id);
+        if($client_id === 0) return 'NO_CLIENT';
+
+        $query = $this->conn->prepare("SELECT * FROM `{$this->table_name}` id = ':id' ORDER BY id DESC LIMIT 1");
+        $query->execute(['id' => $client_id]);
+
+        $client = $query->fetch();
+
+        return $client;
+    }
+
+    public function page($page, $per_page = 10) {
         $page = intval($page);
+        $per_page = intval($per_page) != 0 ? intval($per_page) : 10; 
         
         $count = 0;
 
-        $count = ($page - 1) * 10;
+        $count = ($page - 1) * $per_page;
 
-        $query = $this->conn->prepare("SELECT * FROM `{$this->table_name}` ORDER BY id LIMIT {$count}, 10");
+        $query = $this->conn->prepare("SELECT * FROM `{$this->table_name}` ORDER BY id LIMIT {$count}, {$per_page}");
         $query->execute();
 
         $rows = $query->fetchAll();
 
         return $rows;        
+    }
+
+    public function getCountOfClients() {
+        $query = $this->conn->query("SELECT COUNT(*) AS 'count' FROM `{$this->table_name}`");
+        $query->execute();
+
+        $count = $query->fetchAll();
+
+        return $count[0]['count'];
     }
 
     public function create($name, $surname, $lastname, $sex, $phone, $date_birth)
