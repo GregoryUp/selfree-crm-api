@@ -1,0 +1,23 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "",
+        "version": "1.0.6",
+        "title": "Selfree CRM API"
+    },
+    "host": "127.0.0.1",
+    "tags": [
+        {
+            "name": "clients",
+            "description": "Everything about your Pets"
+        },
+        {
+            "name": "users",
+            "description": "About Users"
+        }
+    ],
+    "schemes": [
+        "https",
+        "http"
+    ]
+}
