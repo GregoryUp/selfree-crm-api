@@ -6,6 +6,8 @@ include_once '../objects/client.php';
 $db = new Database();
 $db = $db->getConnection();
 
+if(!$db) exit(json_encode(["status" => "DB_CONN_FAILED"]));
+
 $name = $_POST['name'];
 $surname = $_POST['surname'];
 $lastname = $_POST['lastname'];

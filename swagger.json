@@ -5,11 +5,15 @@
         "version": "1.0.6",
         "title": "Selfree CRM API"
     },
-    "host": "127.0.0.1",
+    "servers": [
+        {
+            "url": "http://selfree-crm-api"
+        }
+    ],
     "tags": [
         {
             "name": "clients",
-            "description": "Everything about your Pets"
+            "description": "Everything about your Clients"
         },
         {
             "name": "users",
@@ -17,7 +21,114 @@
         }
     ],
     "schemes": [
-        "https",
-        "http"
-    ]
+        "http",
+        "https"
+    ],
+    "paths": {
+        "/clients/page.php": {
+            "get": {
+                "description": "View client",
+                "tags": ["clients"],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Page of clients",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/view.php": {
+            "get": {
+                "description": "View client",
+                "tags": ["clients"],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "Client ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "About Client",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/delete.php": {
+            "delete": {
+                "description": "Delete client",
+                "tags": ["clients"],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "Client ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Client has been deleted",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

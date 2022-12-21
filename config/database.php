@@ -18,7 +18,9 @@ class Database
             $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
             $this->conn->exec("set names utf8");
         } catch (PDOException $exception) {
-            echo "Ошибка подключения: " . $exception->getMessage();
+            header("Content-Type: application/json");
+            http_response_code(500);
+            exit(json_encode(["status" => "DB_CONN_FAILED"]));
         }
 
         return $this->conn;
