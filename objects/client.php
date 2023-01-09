@@ -53,11 +53,11 @@ class Clients
         return $count[0]['count'];
     }
 
-    public function create($name, $surname, $lastname, $sex, $phone, $date_birth)
+    public function create($name, $surname, $middlename, $gender, $phone, $date_birth)
     {
-        $query = $this->conn->prepare("INSERT INTO `{$this->table_name}` (lastname, name, surname, sex, date_birth, phone) VALUES(?, ?, ?, ?, ?, ?)");
+        $query = $this->conn->prepare("INSERT INTO `{$this->table_name}` (surname, name, middlename, gender, date_birth, phone) VALUES(?, ?, ?, ?, ?, ?)");
 
-        $query->execute([$lastname, $name, $surname, $sex, $date_birth, $phone]);
+        $query->execute([$surname, $name, $middlename, $gender, $date_birth, $phone]);
     }
 
     public function update($client_id, $data) {
@@ -66,16 +66,16 @@ class Clients
 
         if($client_id === 0) return 'NO_CLIENT';
 
-        $lastname = $data['lastname'];
-        $name = $data['name'];
         $surname = $data['surname'];
-        $sex = $data['sex'];
+        $name = $data['name'];
+        $middlename = $data['middlename'];
+        $gender = $data['gender'];
         $date_birth = $data['birth_date'];
         $phone = $data['phone'];
 
-        $query = $this->conn->prepare("UPDATE `{$this->table_name}` SET lastname = '?', name = '?', surname = '?', sex = '?', date_birth = '?', phone = '?' WHERE id = '{$client_id}'");
+        $query = $this->conn->prepare("UPDATE `{$this->table_name}` SET surname = '?', name = '?', middlename = '?', gender = '?', date_birth = '?', phone = '?' WHERE id = '{$client_id}'");
 
-        $query->execute([$lastname, $name, $surname, $sex, $date_birth, $phone]);
+        $query->execute([$surname, $name, $middlename, $gender, $date_birth, $phone]);
     }
 
     public function delete($client_id) {

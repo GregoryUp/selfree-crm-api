@@ -16,6 +16,10 @@
             "description": "Everything about your Clients"
         },
         {
+            "name": "leads",
+            "description": "About Leads"
+        },
+        {
             "name": "users",
             "description": "About Users"
         }
@@ -28,7 +32,9 @@
         "/clients/page.php": {
             "get": {
                 "description": "View client",
-                "tags": ["clients"],
+                "tags": [
+                    "clients"
+                ],
                 "parameters": [
                     {
                         "name": "page",
@@ -65,7 +71,9 @@
         "/clients/view.php": {
             "get": {
                 "description": "View client",
-                "tags": ["clients"],
+                "tags": [
+                    "clients"
+                ],
                 "parameters": [
                     {
                         "name": "id",
@@ -99,10 +107,173 @@
                 }
             }
         },
+        "/clients/getCountOfClients.php": {
+            "get": {
+                "description": "Count of clients",
+                "tags": [
+                    "clients"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Client has been deleted",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/create.php": {
+            "post": {
+                "description": "Create client",
+                "tags": [
+                    "clients"
+                ],
+                "parameters": [
+                    {
+                        "name": "Client data",
+                        "in": "body",
+                        "description": "Client data",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "surname": {
+                                    "type" : "string",
+                                    "example" : "Тестов"
+                                },
+                                "name": {
+                                    "type" : "string",
+                                    "example" : "Тест"
+                                },
+                                "middlename": {
+                                    "type" : "string",
+                                    "example" : "Тестович"
+                                },
+                                "gender": {
+                                    "type" : "string",
+                                    "example" : "male"
+                                },
+                                "date_birth": {
+                                    "type" : "string",
+                                    "example" : "2023-01-01"
+                                },
+                                "phone": {
+                                    "type" : "string",
+                                    "example" : "+77777777777"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Client created",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "403": {
+                        "description": "Schema error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/update.php": {
+            "post": {
+                "description": "Update client data",
+                "tags": [
+                    "clients"
+                ],
+                "parameters": [
+                    {
+                        "name": "Client ID",
+                        "in": "query",
+                        "description": "ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "Client data",
+                        "in": "body",
+                        "description": "Client data",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "surname": {
+                                    "type" : "string",
+                                    "example" : "Тестов"
+                                },
+                                "name": {
+                                    "type" : "string",
+                                    "example" : "Тест"
+                                },
+                                "middlename": {
+                                    "type" : "string",
+                                    "example" : "Тестович"
+                                },
+                                "gender": {
+                                    "type" : "string",
+                                    "example" : "male"
+                                },
+                                "date_birth": {
+                                    "type" : "string",
+                                    "example" : "2023-01-01"
+                                },
+                                "phone": {
+                                    "type" : "string",
+                                    "example" : "+77777777777"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Client created",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "403": {
+                        "description": "Schema error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
         "/clients/delete.php": {
             "delete": {
                 "description": "Delete client",
-                "tags": ["clients"],
+                "tags": [
+                    "clients"
+                ],
                 "parameters": [
                     {
                         "name": "id",

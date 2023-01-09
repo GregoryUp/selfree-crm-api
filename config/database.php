@@ -6,7 +6,7 @@ class Database
     private $host = "127.0.0.1";
     private $db_name = "selfree_crm";
     private $username = "root";
-    private $password = "";
+    private $password = "root";
     public $conn;
 
     // получаем соединение с БД

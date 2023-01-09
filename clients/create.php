@@ -8,12 +8,17 @@ $db = $db->getConnection();
 
 if(!$db) exit(json_encode(["status" => "DB_CONN_FAILED"]));
 
-$name = $_POST['name'];
 $surname = $_POST['surname'];
-$lastname = $_POST['lastname'];
-$sex = $_POST['sex'];
+$name = $_POST['name'];
+$middlename = $_POST['middlename'];
+$gender = $_POST['gender'];
 $phone = $_POST['phone'];
 $date_birth = $_POST['date_birth'];
+
+if (!in_array($_POST['gender'], ['male', 'female'])) {
+    http_response_code(403);
+    exit(json_encode(['schema' => 'gender field must be \'male\' or \'female\'']));
+}
 
 $client = new Clients($db);
 
