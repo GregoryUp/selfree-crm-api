@@ -202,7 +202,7 @@
                 ],
                 "parameters": [
                     {
-                        "name": "Client ID",
+                        "name": "id",
                         "in": "query",
                         "description": "ID",
                         "required": true,
@@ -211,7 +211,7 @@
                         }
                     },
                     {
-                        "name": "Client data",
+                        "name": "obj",
                         "in": "body",
                         "description": "Client data",
                         "required": true,

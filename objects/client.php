@@ -70,10 +70,10 @@ class Clients
         $name = $data['name'];
         $middlename = $data['middlename'];
         $gender = $data['gender'];
-        $date_birth = $data['birth_date'];
+        $date_birth = $data['date_birth'];
         $phone = $data['phone'];
 
-        $query = $this->conn->prepare("UPDATE `{$this->table_name}` SET surname = '?', name = '?', middlename = '?', gender = '?', date_birth = '?', phone = '?' WHERE id = '{$client_id}'");
+        $query = $this->conn->prepare("UPDATE `{$this->table_name}` SET surname = ?, name = ?, middlename = ?, gender = ?, date_birth = ?, phone = ? WHERE id = '{$client_id}'");
 
         $query->execute([$surname, $name, $middlename, $gender, $date_birth, $phone]);
     }

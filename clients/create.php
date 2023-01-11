@@ -15,7 +15,7 @@ $gender = $_POST['gender'];
 $phone = $_POST['phone'];
 $date_birth = $_POST['date_birth'];
 
-if (!in_array($_POST['gender'], ['male', 'female'])) {
+if (!in_array($gender, ['male', 'female'])) {
     http_response_code(403);
     exit(json_encode(['schema' => 'gender field must be \'male\' or \'female\'']));
 }
@@ -23,7 +23,7 @@ if (!in_array($_POST['gender'], ['male', 'female'])) {
 $client = new Clients($db);
 
 try {
-    $client->create($name, $surname, $lastname, $sex, $phone, $date_birth);
+    $client->create($name, $surname, $middlename, $gender, $phone, $date_birth);
     echo 'OK';
 } catch (PDOException $e) {
     echo 'ERROR';
