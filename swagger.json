@@ -7,7 +7,7 @@
     },
     "servers": [
         {
-            "url": "http://selfree-crm-api"
+            "url": "https://api.selfree-school.ru/"
         }
     ],
     "tags": [
@@ -25,8 +25,8 @@
         }
     ],
     "schemes": [
-        "http",
-        "https"
+        "https",
+        "http"
     ],
     "paths": {
         "/clients/page.php": {
@@ -135,41 +135,45 @@
                 "tags": [
                     "clients"
                 ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
                 "parameters": [
                     {
-                        "name": "Client data",
-                        "in": "body",
-                        "description": "Client data",
-                        "required": true,
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "surname": {
-                                    "type" : "string",
-                                    "example" : "Тестов"
-                                },
-                                "name": {
-                                    "type" : "string",
-                                    "example" : "Тест"
-                                },
-                                "middlename": {
-                                    "type" : "string",
-                                    "example" : "Тестович"
-                                },
-                                "gender": {
-                                    "type" : "string",
-                                    "example" : "male"
-                                },
-                                "date_birth": {
-                                    "type" : "string",
-                                    "example" : "2023-01-01"
-                                },
-                                "phone": {
-                                    "type" : "string",
-                                    "example" : "+77777777777"
-                                }
-                            }
-                        }
+                        "name": "surname",
+                        "in": "formData",
+                        "description": "Client surname",
+                        "required": true
+                    },
+                    {
+                        "name": "name",
+                        "in": "formData",
+                        "description": "Client name",
+                        "required": true
+                    },
+                    {
+                        "name": "middlename",
+                        "in": "formData",
+                        "description": "Client middlename",
+                        "required": true
+                    },
+                    {
+                        "name": "gender",
+                        "in": "formData",
+                        "description": "Client gender",
+                        "required": true
+                    },
+                    {
+                        "name": "date_birth",
+                        "in": "formData",
+                        "description": "Client date_birth",
+                        "required": true
+                    },
+                    {
+                        "name": "phone",
+                        "in": "formData",
+                        "description": "Client phone",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -219,28 +223,28 @@
                             "type": "object",
                             "properties": {
                                 "surname": {
-                                    "type" : "string",
-                                    "example" : "Тестов"
+                                    "type": "string",
+                                    "example": "Тестов"
                                 },
                                 "name": {
-                                    "type" : "string",
-                                    "example" : "Тест"
+                                    "type": "string",
+                                    "example": "Тест"
                                 },
                                 "middlename": {
-                                    "type" : "string",
-                                    "example" : "Тестович"
+                                    "type": "string",
+                                    "example": "Тестович"
                                 },
                                 "gender": {
-                                    "type" : "string",
-                                    "example" : "male"
+                                    "type": "string",
+                                    "example": "male"
                                 },
                                 "date_birth": {
-                                    "type" : "string",
-                                    "example" : "2023-01-01"
+                                    "type": "string",
+                                    "example": "2023-01-01"
                                 },
                                 "phone": {
-                                    "type" : "string",
-                                    "example" : "+77777777777"
+                                    "type": "string",
+                                    "example": "+77777777777"
                                 }
                             }
                         }

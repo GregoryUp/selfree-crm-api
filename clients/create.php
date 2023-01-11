@@ -8,6 +8,9 @@ $db = $db->getConnection();
 
 if(!$db) exit(json_encode(["status" => "DB_CONN_FAILED"]));
 
+if (empty($_POST))
+    exit(json_encode(['status' => "Data is empty"]));
+
 $surname = $_POST['surname'];
 $name = $_POST['name'];
 $middlename = $_POST['middlename'];

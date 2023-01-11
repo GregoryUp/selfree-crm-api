@@ -7,6 +7,7 @@ class Database
     private $db_name = "selfree_crm";
     private $username = "surenchik";
     private $password = "GkIy1_xuJxcM!tFi";
+    
     public $conn;
 
     // получаем соединение с БД
