@@ -7,15 +7,11 @@ $db = new Database();
 $db = $db->getConnection();
 
 $id = intval($_GET['id']) != 0 ? intval($_GET['id']) : die("ERROR_PARAMETER");
+$json = file_get_contents('php://input');
 
-$data = [];
+$data = json_decode($json, true);
 
-$data['surname'] = $_POST['surname'];
-$data['name'] = $_POST['name'];
-$data['middlename'] = $_POST['middlename'];
-$data['phone'] = $_POST['phone'];
-$data['gender'] = $_POST['gender'];
-$data['date_birth'] = $_POST['date_birth'];
+if($data === null) die("INVALID_JSON");
 
 $client = new Clients($db);
 

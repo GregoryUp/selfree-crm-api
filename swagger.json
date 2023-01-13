@@ -199,7 +199,7 @@
             }
         },
         "/clients/update.php": {
-            "post": {
+            "patch": {
                 "description": "Update client data",
                 "tags": [
                     "clients"
@@ -215,9 +215,9 @@
                         }
                     },
                     {
-                        "name": "obj",
+                        "name": "data",
                         "in": "body",
-                        "description": "Client data",
+                        "description": "Client data to update",
                         "required": true,
                         "schema": {
                             "type": "object",
