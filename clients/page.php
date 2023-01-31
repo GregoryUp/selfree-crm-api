@@ -1,7 +1,7 @@
 <?php
 
 include_once '../config/database.php';
-include_once '../objects/client.php';
+include_once '../objects/clients.php';
 
 $page = intval($_GET['page']);
 
@@ -10,6 +10,13 @@ $db = $db->getConnection();
 
 $client = new Clients($db);
 
-$clients = $client->page($page);
 
-echo json_encode($clients);
+
+try{
+    $clients = $client->page($page);
+    header('Content-Type: application/json');
+    echo json_encode($clients);
+} catch(PDOException $e) {
+    http_response_code(500);
+    echo 'ERROR_REQUEST';
+}

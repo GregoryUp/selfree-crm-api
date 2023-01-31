@@ -1,7 +1,7 @@
 <?php
 
 include_once '../config/database.php';
-include_once '../objects/client.php';
+include_once '../objects/clients.php';
 
 $db = new Database();
 $db = $db->getConnection();
@@ -14,5 +14,6 @@ try {
     $client->delete($id);
     echo 'OK';
 } catch (PDOException $e) {
+    http_response_code(500);
     echo 'ERROR_REQUEST';
 }

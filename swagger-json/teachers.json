@@ -1,0 +1,289 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "",
+        "version": "1.0.6",
+        "title": "Selfree CRM API"
+    },
+    "servers": [
+        {
+            "url": "https://api.selfree-school.ru/"
+        }
+    ],
+    "tags": [
+        {
+            "name": "teachers",
+            "description": "Everything about your Teachers"
+        }
+    ],
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "paths": {
+        "/teachers/page.php": {
+            "get": {
+                "description": "View teachers",
+                "tags": [
+                    "teachers"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Page of clients",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/teachers/read.php": {
+            "get": {
+                "description": "View teacher",
+                "tags": [
+                    "teachers"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "Teacher ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "About Teacher",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/teachers/getCountOfTeachers.php": {
+            "get": {
+                "description": "Count of teachers",
+                "tags": [
+                    "teachers"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Count of teachers",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/teachers/create.php": {
+            "post": {
+                "description": "Create teacher",
+                "tags": [
+                    "teachers"
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "formData",
+                        "description": "Teacher name",
+                        "required": true
+                    },
+                    {
+                        "name": "gender",
+                        "in": "formData",
+                        "description": "Teacher gender",
+                        "required": true
+                    },
+                    {
+                        "name": "skill",
+                        "in": "formData",
+                        "description": "Teacher's skill"
+                    },
+                    {
+                        "name": "phone",
+                        "in": "formData",
+                        "description": "Teacher phone",
+                        "required": true
+                    },
+                    {
+                        "name": "email",
+                        "in": "formData",
+                        "description": "Teacher email"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Teacher created",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Schema error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/teachers/update.php": {
+            "patch": {
+                "description": "Update teacher data",
+                "tags": [
+                    "teachers"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Teacher data to update",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example": "Тест"
+                                },
+                                "gender": {
+                                    "type": "string",
+                                    "example": "male"
+                                },
+                                "skill": {
+                                    "type": "string",
+                                    "example": "2023-01-01"
+                                },
+                                "phone": {
+                                    "type": "string",
+                                    "example": "+77777777777"
+                                },
+                                "email": {
+                                    "type": "string",
+                                    "example": "example@mail.com"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Teacher updated",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Schema error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/teachers/delete.php": {
+            "delete": {
+                "description": "Delete teacher",
+                "tags": [
+                    "teachers"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "Teacher ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Teacher has been deleted",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

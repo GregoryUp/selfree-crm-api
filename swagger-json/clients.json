@@ -14,14 +14,6 @@
         {
             "name": "clients",
             "description": "Everything about your Clients"
-        },
-        {
-            "name": "leads",
-            "description": "About Leads"
-        },
-        {
-            "name": "users",
-            "description": "About Users"
         }
     ],
     "schemes": [
@@ -68,7 +60,7 @@
                 }
             }
         },
-        "/clients/view.php": {
+        "/clients/read.php": {
             "get": {
                 "description": "View client",
                 "tags": [
@@ -183,7 +175,7 @@
                             "application/json": {}
                         }
                     },
-                    "403": {
+                    "400": {
                         "description": "Schema error",
                         "content": {
                             "application/json": {}
@@ -252,12 +244,12 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Client created",
+                        "description": "Client updated",
                         "content": {
                             "application/json": {}
                         }
                     },
-                    "403": {
+                    "400": {
                         "description": "Schema error",
                         "content": {
                             "application/json": {}

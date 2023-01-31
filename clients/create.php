@@ -3,15 +3,13 @@
 require_once '../vendor/autoload.php';
 
 include_once '../config/database.php';
-include_once '../objects/client.php';
+include_once '../objects/clients.php';
 include_once '../functions/formatPhone.php';
 
 $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
 
 $db = new Database();
 $db = $db->getConnection();
-
-if(!$db) exit(json_encode(["status" => "DB_CONN_FAILED"]));
 
 if (empty($_POST))
     exit(json_encode(['status' => "Data is empty"]));
@@ -41,5 +39,6 @@ try {
     $client->create($name, $surname, $middlename, $gender, $phone, $date_birth);
     echo 'OK';
 } catch (PDOException $e) {
+    http_response_code(500);
     echo 'ERROR_REQUEST';
 }

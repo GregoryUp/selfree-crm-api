@@ -1,0 +1,492 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "",
+        "version": "1.0.6",
+        "title": "Selfree CRM API"
+    },
+    "servers": [
+        {
+            "url": "https://api.selfree-school.ru/"
+        }
+    ],
+    "tags": [
+        {
+            "name": "leads",
+            "description": "About Leads"
+        },
+        {
+            "name": "Source Leads",
+            "description": "About Source Leads"
+        }
+    ],
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "paths": {
+        "/leads/list.php": {
+            "get": {
+                "description": "List of leads",
+                "tags": [
+                    "leads"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of leads",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/leads/read.php": {
+            "get": {
+                "description": "Read lead",
+                "tags": [
+                    "leads"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "Lead ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get lead",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/leads/create.php": {
+            "post": {
+                "description": "List of leads",
+                "tags": [
+                    "leads"
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "formData",
+                        "description": "Lead name",
+                        "required": true
+                    },
+                    {
+                        "name": "phone",
+                        "in": "formData",
+                        "description": "Lead phone",
+                        "required": true
+                    },
+                    {
+                        "name": "email",
+                        "in": "formData",
+                        "description": "Lead email",
+                        "required": false
+                    },
+                    {
+                        "name": "comment",
+                        "in": "formData",
+                        "description": "Lead comment",
+                        "required": true
+                    },
+                    {
+                        "name": "source",
+                        "in": "formData",
+                        "description": "Lead source id",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "name": "status",
+                        "in": "formData",
+                        "description": "Lead status",
+                        "type": "integer",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of leads",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/leads/update.php": {
+            "patch": {
+                "description": "Update client data",
+                "tags": [
+                    "leads"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Client data to update",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example": "Тестов"
+                                },
+                                "phone": {
+                                    "type": "string",
+                                    "example": "Тест"
+                                },
+                                "email": {
+                                    "type": "string",
+                                    "example": "Тестович"
+                                },
+                                "source": {
+                                    "type": "string",
+                                    "example": "from-site"
+                                },
+                                "status": {
+                                    "type": "number",
+                                    "example": "1"
+                                },
+                                "comment": {
+                                    "type": "string",
+                                    "example": "Комментарий"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lead updated",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Schema error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/leads/setStatus.php": {
+            "put": {
+                "description": "Update client data",
+                "tags": [
+                    "leads"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "body",
+                        "description": "Lead status updated",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "number",
+                                    "example": 1
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lead updated",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Schema error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/leads/delete.php": {
+            "delete": {
+                "description": "Delete lead",
+                "tags": [
+                    "leads"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "Client ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lead has been deleted",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/source_list/read.php": {
+            "get": {
+                "description": "Source lead read",
+                "tags": [
+                    "Source Leads"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "Sorce lead ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Source lead is got"
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/source_list/list.php": {
+            "get": {
+                "description": "Sources list",
+                "tags": [
+                    "Source Leads"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sources list",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/source_list/create.php": {
+            "post": {
+                "description": "Create Source",
+                "tags": [
+                    "Source Leads"
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "formData",
+                        "description": "Lead name",
+                        "required": true
+                    },
+                    {
+                        "name": "slug",
+                        "in": "formData",
+                        "description": "Lead phone",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sources list",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/source_list/update.php": {
+            "patch": {
+                "description": "Update source lead",
+                "tags": [
+                    "Source Leads"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Source lead data to update",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example": "Тестов"
+                                },
+                                "slug": {
+                                    "type": "string",
+                                    "example": "source-1"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Source Lead has been deleted",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/source_list/delete.php": {
+            "delete": {
+                "description": "Delete source lead",
+                "tags": [
+                    "Source Leads"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "Client ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Source Lead has been deleted",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

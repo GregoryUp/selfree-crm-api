@@ -26,6 +26,8 @@ class Clients
 
         $query->execute(['id' => $client_id]);
 
+        if ($query->rowCount() == 0) return 'NOT_FOUND';
+
         $client = $query->fetch(PDO::FETCH_ASSOC);
 
         return $client;
@@ -42,7 +44,7 @@ class Clients
         $query->bindValue(':per_page', $per_page, PDO::PARAM_INT);
         $query->execute();
 
-        $rows = $query->fetchAll();
+        $rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
         return $rows;        
     }
