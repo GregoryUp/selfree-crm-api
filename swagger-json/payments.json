@@ -12,12 +12,8 @@
     ],
     "tags": [
         {
-            "name": "leads",
-            "description": "Лиды"
-        },
-        {
-            "name": "Source Leads",
-            "description": "Трафик лидов"
+            "name": "clients",
+            "description": "Клиенты"
         }
     ],
     "schemes": [
@@ -25,39 +21,17 @@
         "http"
     ],
     "paths": {
-        "/leads/list.php": {
+        "/clients/page.php": {
             "get": {
-                "summary": "Список лидов",
+                "summary": "Получение списка клиентов пагинацией",
                 "tags": [
-                    "leads"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Список лидов",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка в сервере",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/leads/read.php": {
-            "get": {
-                "summary": "Информация о лиде",
-                "tags": [
-                    "leads"
+                    "clients"
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "page",
                         "in": "query",
-                        "description": "Lead ID",
+                        "description": "Страница",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -66,7 +40,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Информация о лиде",
+                        "description": "Список клиентов",
                         "content": {
                             "application/json": {}
                         }
@@ -86,58 +60,32 @@
                 }
             }
         },
-        "/leads/create.php": {
-            "post": {
-                "summary": "Создание лида",
+        "/clients/read.php": {
+            "get": {
+                "summary": "Информация о клиенте",
                 "tags": [
-                    "leads"
-                ],
-                "consumes": [
-                    "multipart/form-data"
+                    "clients"
                 ],
                 "parameters": [
                     {
-                        "name": "name",
-                        "in": "formData",
-                        "description": "ФИО",
-                        "required": true
-                    },
-                    {
-                        "name": "phone",
-                        "in": "formData",
-                        "description": "Телефон",
-                        "required": true
-                    },
-                    {
-                        "name": "email",
-                        "in": "formData",
-                        "description": "Email",
-                        "required": false
-                    },
-                    {
-                        "name": "comment",
-                        "in": "formData",
-                        "description": "Комментарий к лиду",
-                        "required": true
-                    },
-                    {
-                        "name": "source",
-                        "in": "formData",
-                        "description": "Слаг источника",
-                        "type": "string",
-                        "required": true
-                    },
-                    {
-                        "name": "status",
-                        "in": "formData",
-                        "description": "Номер статуса",
-                        "type": "integer",
-                        "required": true
+                        "name": "id",
+                        "in": "query",
+                        "description": "ID клиента",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Получение списка лидов",
+                        "description": "Информация о клиенте",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "NOT FOUND",
                         "content": {
                             "application/json": {}
                         }
@@ -151,61 +99,78 @@
                 }
             }
         },
-        "/leads/update.php": {
-            "patch": {
-                "summary": "Обновить данные лида",
+        "/clients/count.php": {
+            "get": {
+                "summary": "Кол-во клиентов",
                 "tags": [
-                    "leads"
+                    "clients"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Получение кол-ва клиентов",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/create.php": {
+            "post": {
+                "summary": "Создание клиента",
+                "tags": [
+                    "clients"
+                ],
+                "consumes": [
+                    "multipart/form-data"
                 ],
                 "parameters": [
                     {
-                        "name": "id",
-                        "in": "query",
-                        "description": "ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "name": "surname",
+                        "in": "formData",
+                        "description": "Фамилия",
+                        "required": true
                     },
                     {
-                        "name": "data",
-                        "in": "body",
-                        "description": "Данные для обновления",
-                        "required": true,
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "name": {
-                                    "type": "string",
-                                    "example": "Тестов Тест Тестович"
-                                },
-                                "phone": {
-                                    "type": "string",
-                                    "example": "+7(777)777-77-77"
-                                },
-                                "email": {
-                                    "type": "string",
-                                    "example": "example@mail.ru"
-                                },
-                                "source": {
-                                    "type": "string",
-                                    "example": "from-site"
-                                },
-                                "status": {
-                                    "type": "number",
-                                    "example": "1"
-                                },
-                                "comment": {
-                                    "type": "string",
-                                    "example": "Комментарий"
-                                }
-                            }
-                        }
+                        "name": "name",
+                        "in": "formData",
+                        "description": "Имя",
+                        "required": true
+                    },
+                    {
+                        "name": "middlename",
+                        "in": "formData",
+                        "description": "Отчество",
+                        "required": true
+                    },
+                    {
+                        "name": "gender",
+                        "in": "formData",
+                        "description": "Пол",
+                        "required": true
+                    },
+                    {
+                        "name": "date_birth",
+                        "in": "formData",
+                        "description": "Дата рождения",
+                        "required": true
+                    },
+                    {
+                        "name": "phone",
+                        "in": "formData",
+                        "description": "Телефон",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Данные о лиде обновлены",
+                        "description": "Создан",
                         "content": {
                             "application/json": {}
                         }
@@ -225,11 +190,11 @@
                 }
             }
         },
-        "/leads/setStatus.php": {
-            "put": {
-                "summary": "Установить статус лида",
+        "/clients/update.php": {
+            "patch": {
+                "summary": "Обновить данные клиента",
                 "tags": [
-                    "leads"
+                    "clients"
                 ],
                 "parameters": [
                     {
@@ -242,15 +207,89 @@
                         }
                     },
                     {
-                        "name": "status",
+                        "name": "data",
                         "in": "body",
-                        "description": "Статус лида",
+                        "description": "Новые данные клиента",
                         "required": true,
                         "schema": {
                             "type": "object",
                             "properties": {
-                                "status": {
-                                    "type": "number",
+                                "surname": {
+                                    "type": "string",
+                                    "example": "Тестов"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "Тест"
+                                },
+                                "middlename": {
+                                    "type": "string",
+                                    "example": "Тестович"
+                                },
+                                "gender": {
+                                    "type": "string",
+                                    "example": "male"
+                                },
+                                "date_birth": {
+                                    "type": "string",
+                                    "example": "2023-01-01"
+                                },
+                                "phone": {
+                                    "type": "string",
+                                    "example": "+7(777)777-77-77"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Данные клиента обновлены",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/setTariff.php": {
+            "put": {
+                "summary": "Установить тариф",
+                "tags": [
+                    "clients"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description":"ID клиента",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "tariff",
+                        "in": "body",
+                        "description": "Тариф",
+                        "required":  true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "tariff_id": {
+                                    "type": "integer",
                                     "example": 1
                                 }
                             }
@@ -259,13 +298,13 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Статус лида установлен",
+                        "description": "Тариф обновлен",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "400": {
-                        "description": "Ошибка в запросе",
+                        "description":"Ошибка в запросе",
                         "content": {
                             "application/json": {}
                         }
@@ -279,173 +318,33 @@
                 }
             }
         },
-        "/leads/delete.php": {
-            "delete": {
-                "summary": "Удалить лида",
+        "/clients/setAbonement.php": {
+            "put": {
+                "summary":"Установить абонемент",
                 "tags": [
-                    "leads"
+                    "clients"
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "client_id",
                         "in": "query",
-                        "description": "ID",
+                        "description": "ID клиента",
                         "required": true,
                         "schema": {
                             "type": "integer"
                         }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Лид удалён",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "400": {
-                        "description": "Ошибка в запросе",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка в сервере",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/source_list/read.php": {
-            "get": {
-                "summary": "Информация об источнике лидов",
-                "tags": [
-                    "Source Leads"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "query",
-                        "description": "ID",
-                        "required": true,
-                        "schema": {
-                            "type": "number"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Получен источник лидов"
-                    },
-                    "500": {
-                        "description": "Server Error",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/source_list/list.php": {
-            "get": {
-                "summary": "Список источников",
-                "tags": [
-                    "Source Leads"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Получен сисок источников",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка в сервере",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/source_list/create.php": {
-            "post": {
-                "summary": "Создание источника лидов",
-                "tags": [
-                    "Source Leads"
-                ],
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "parameters": [
-                    {
-                        "name": "name",
-                        "in": "formData",
-                        "description": "Название",
-                        "required": true
                     },
                     {
-                        "name": "slug",
-                        "in": "formData",
-                        "description": "Слаг",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Источник создан",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "400": {
-                        "description": "Ошибка в запросе",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка в сервере",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/source_list/update.php": {
-            "patch": {
-                "summary": "Обновить данные об источнике лида",
-                "tags": [
-                    "Source Leads"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "query",
-                        "description": "ID",
-                        "required": true,
-                        "schema": {
-                            "type": "number"
-                        }
-                    },
-                    {
-                        "name": "data",
+                        "name": "abonement_id",
                         "in": "body",
-                        "description": "Данные для обновления",
+                        "description": "ID абонемента",
                         "required": true,
                         "schema": {
                             "type": "object",
                             "properties": {
-                                "name": {
-                                    "type": "string",
-                                    "example": "Тестов"
-                                },
-                                "slug": {
-                                    "type": "string",
-                                    "example": "source-1"
+                                "abonement_id": {
+                                    "type": "integer",
+                                    "example": 1
                                 }
                             }
                         }
@@ -453,13 +352,13 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Данные источника обновлены",
+                        "description": "Абонемент обновлен",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "400": {
-                        "description": "Ошибка в запросе",
+                        "description":"Ошибка в запросе",
                         "content": {
                             "application/json": {}
                         }
@@ -473,17 +372,17 @@
                 }
             }
         },
-        "/source_list/delete.php": {
+        "/clients/delete.php": {
             "delete": {
-                "summary": "Удалить источник лидов",
+                "summary": "Удалить клиента",
                 "tags": [
-                    "Source Leads"
+                    "clients"
                 ],
                 "parameters": [
                     {
                         "name": "id",
                         "in": "query",
-                        "description": "Client ID",
+                        "description": "ID",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -492,7 +391,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Источник удалён",
+                        "description": "Клиент удален",
                         "content": {
                             "application/json": {}
                         }

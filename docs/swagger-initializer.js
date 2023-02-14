@@ -16,6 +16,18 @@ window.onload = function() {
       {
         url: "/swagger-json/teachers.json",
         name: "Преподаватели"
+      },
+      {
+        url: "/swagger-json/tariffs.json",
+        name: "Тариффы и абонементы"
+      },
+      {
+        url: "/swagger-json/lessons.json",
+        name: "Уроки"
+      },
+      {
+        url: "/swagger-json/payments.json",
+        name: "Платежи"
       }
     ],
     dom_id: '#swagger-ui',

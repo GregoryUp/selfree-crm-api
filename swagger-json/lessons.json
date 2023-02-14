@@ -12,8 +12,8 @@
     ],
     "tags": [
         {
-            "name": "teachers",
-            "description": "Преподаватели"
+            "name": "lessons",
+            "description": "Уроки"
         }
     ],
     "schemes": [
@@ -21,56 +21,35 @@
         "http"
     ],
     "paths": {
-        "/teachers/page.php": {
+        "/lessons/timetable.php": {
             "get": {
-                "summary": "Получение списка преподавателей пагинацией",
+                "description": "Расписание студента",
                 "tags": [
-                    "teachers"
+                    "lessons"
                 ],
                 "parameters": [
                     {
-                        "name": "page",
+                        "name": "client_id",
                         "in": "query",
-                        "description": "Страница",
+                        "description": "ID клиента",
                         "required": true,
                         "schema": {
-                            "type": "number"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Список преподавателей",
-                        "content": {
-                            "application/json": {}
+                            "type": "integer"
                         }
                     },
-                    "404": {
-                        "description": "NOT FOUND",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка в сервере",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/teachers/read.php": {
-            "get": {
-                "summary": "Информация о преподавателя",
-                "tags": [
-                    "teachers"
-                ],
-                "parameters": [
                     {
-                        "name": "id",
+                        "name": "date_start",
                         "in": "query",
-                        "description": "ID",
+                        "description": "Начало",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "date_end",
+                        "in": "query",
+                        "description": "Конец",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -79,7 +58,46 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Информация о преподавателя",
+                        "description": "Список уроков",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запроса",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/lessons/read.php": {
+            "get": {
+                "description": "Информация об уроке",
+                "tags": [
+                    "lessons"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "lesson ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Информация об уроке",
                         "content": {
                             "application/json": {}
                         }
@@ -99,15 +117,38 @@
                 }
             }
         },
-        "/teachers/getCountOfTeachers.php": {
-            "get": {
-                "summary": "Кол-во преподавателей",
+        "/lessons/create.php": {
+            "post": {
+                "description": "Create teacher",
                 "tags": [
-                    "teachers"
+                    "lessons"
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "formData",
+                        "description": "Teacher name",
+                        "required": true
+                    },
+                    {
+                        "name": "gender",
+                        "in": "formData",
+                        "description": "Teacher gender",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Получение кол-ва преподавателей",
+                        "description": "Teacher created",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Schema error",
                         "content": {
                             "application/json": {}
                         }
@@ -121,72 +162,11 @@
                 }
             }
         },
-        "/teachers/create.php": {
-            "post": {
-                "summary": "Создать преподавателя",
-                "tags": [
-                    "teachers"
-                ],
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "parameters": [
-                    {
-                        "name": "name",
-                        "in": "formData",
-                        "description": "ФИО",
-                        "required": true
-                    },
-                    {
-                        "name": "gender",
-                        "in": "formData",
-                        "description": "Пол",
-                        "required": true
-                    },
-                    {
-                        "name": "skill",
-                        "in": "formData",
-                        "description": "Специальность"
-                    },
-                    {
-                        "name": "phone",
-                        "in": "formData",
-                        "description": "Телефон",
-                        "required": true
-                    },
-                    {
-                        "name": "email",
-                        "in": "formData",
-                        "description": "Email"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Преподаватель создан",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "400": {
-                        "description": "Ошибка в запросе",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка в сервере",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/teachers/update.php": {
+        "/lessons/update.php": {
             "patch": {
-                "summary": "Обновить данные преподавателя",
+                "description": "Update teacher data",
                 "tags": [
-                    "teachers"
+                    "lessons"
                 ],
                 "parameters": [
                     {
@@ -201,14 +181,14 @@
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "Новые данные преподавателя",
+                        "description": "Teacher data to update",
                         "required": true,
                         "schema": {
                             "type": "object",
                             "properties": {
                                 "name": {
                                     "type": "string",
-                                    "example": "Тестов Тест Тестович"
+                                    "example": "Тест"
                                 },
                                 "gender": {
                                     "type": "string",
@@ -220,7 +200,7 @@
                                 },
                                 "phone": {
                                     "type": "string",
-                                    "example": "+7(777)777-77-77"
+                                    "example": "+77777777777"
                                 },
                                 "email": {
                                     "type": "string",
@@ -232,19 +212,19 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Данные преподавателя обновлены",
+                        "description": "Teacher updated",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "400": {
-                        "description": "Ошибка в запросе",
+                        "description": "Schema error",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Ошибка в сервере",
+                        "description": "Server Error",
                         "content": {
                             "application/json": {}
                         }
@@ -252,38 +232,32 @@
                 }
             }
         },
-        "/teachers/delete.php": {
+        "/lessons/delete.php": {
             "delete": {
-                "summary": "Удалить преподавателя",
+                "description": "Delete teacher",
                 "tags": [
-                    "teachers"
+                    "lessons"
                 ],
                 "parameters": [
                     {
                         "name": "id",
                         "in": "query",
-                        "description": "ID",
+                        "description": "Teacher ID",
                         "required": true,
                         "schema": {
-                            "type": "number"
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Преподаватель удалён",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "400": {
-                        "description": "Ошибка в запросе",
+                        "description": "Teacher has been deleted",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Ошибка в сервере",
+                        "description": "Server Error",
                         "content": {
                             "application/json": {}
                         }

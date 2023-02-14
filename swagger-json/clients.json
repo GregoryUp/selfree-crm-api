@@ -13,7 +13,7 @@
     "tags": [
         {
             "name": "clients",
-            "description": "Everything about your Clients"
+            "description": "Клиенты"
         }
     ],
     "schemes": [
@@ -23,7 +23,7 @@
     "paths": {
         "/clients/page.php": {
             "get": {
-                "description": "View client",
+                "summary": "Получение списка клиентов пагинацией",
                 "tags": [
                     "clients"
                 ],
@@ -31,7 +31,7 @@
                     {
                         "name": "page",
                         "in": "query",
-                        "description": "Page",
+                        "description": "Страница",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -40,19 +40,19 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Page of clients",
+                        "description": "Список клиентов",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "NOT FOUND",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка в сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -62,7 +62,7 @@
         },
         "/clients/read.php": {
             "get": {
-                "description": "View client",
+                "summary": "Информация о клиенте",
                 "tags": [
                     "clients"
                 ],
@@ -70,7 +70,7 @@
                     {
                         "name": "id",
                         "in": "query",
-                        "description": "Client ID",
+                        "description": "ID клиента",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -79,19 +79,19 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "About Client",
+                        "description": "Информация о клиенте",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "NOT FOUND",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка в сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -99,21 +99,21 @@
                 }
             }
         },
-        "/clients/getCountOfClients.php": {
+        "/clients/count.php": {
             "get": {
-                "description": "Count of clients",
+                "summary": "Кол-во клиентов",
                 "tags": [
                     "clients"
                 ],
                 "responses": {
                     "200": {
-                        "description": "Client has been deleted",
+                        "description": "Получение кол-ва клиентов",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка в сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -123,7 +123,7 @@
         },
         "/clients/create.php": {
             "post": {
-                "description": "Create client",
+                "summary": "Создание клиента",
                 "tags": [
                     "clients"
                 ],
@@ -134,55 +134,55 @@
                     {
                         "name": "surname",
                         "in": "formData",
-                        "description": "Client surname",
+                        "description": "Фамилия",
                         "required": true
                     },
                     {
                         "name": "name",
                         "in": "formData",
-                        "description": "Client name",
+                        "description": "Имя",
                         "required": true
                     },
                     {
                         "name": "middlename",
                         "in": "formData",
-                        "description": "Client middlename",
+                        "description": "Отчество",
                         "required": true
                     },
                     {
                         "name": "gender",
                         "in": "formData",
-                        "description": "Client gender",
+                        "description": "Пол",
                         "required": true
                     },
                     {
                         "name": "date_birth",
                         "in": "formData",
-                        "description": "Client date_birth",
+                        "description": "Дата рождения",
                         "required": true
                     },
                     {
                         "name": "phone",
                         "in": "formData",
-                        "description": "Client phone",
+                        "description": "Телефон",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Client created",
+                        "description": "Создан",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "400": {
-                        "description": "Schema error",
+                        "description": "Ошибка в запросе",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка в сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -192,7 +192,7 @@
         },
         "/clients/update.php": {
             "patch": {
-                "description": "Update client data",
+                "summary": "Обновить данные клиента",
                 "tags": [
                     "clients"
                 ],
@@ -209,7 +209,7 @@
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "Client data to update",
+                        "description": "Новые данные клиента",
                         "required": true,
                         "schema": {
                             "type": "object",
@@ -236,7 +236,7 @@
                                 },
                                 "phone": {
                                     "type": "string",
-                                    "example": "+77777777777"
+                                    "example": "+7(777)777-77-77"
                                 }
                             }
                         }
@@ -244,19 +244,127 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Client updated",
+                        "description": "Данные клиента обновлены",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "400": {
-                        "description": "Schema error",
+                        "description": "Ошибка в запросе",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/setTariff.php": {
+            "put": {
+                "summary": "Установить тариф",
+                "tags": [
+                    "clients"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description":"ID клиента",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "tariff",
+                        "in": "body",
+                        "description": "Тариф",
+                        "required":  true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "tariff_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Тариф обновлен",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description":"Ошибка в запросе",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/setAbonement.php": {
+            "put": {
+                "summary":"Установить абонемент",
+                "tags": [
+                    "clients"
+                ],
+                "parameters": [
+                    {
+                        "name": "client_id",
+                        "in": "query",
+                        "description": "ID клиента",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "abonement_id",
+                        "in": "body",
+                        "description": "ID абонемента",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "abonement_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Абонемент обновлен",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description":"Ошибка в запросе",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -266,7 +374,7 @@
         },
         "/clients/delete.php": {
             "delete": {
-                "description": "Delete client",
+                "summary": "Удалить клиента",
                 "tags": [
                     "clients"
                 ],
@@ -274,7 +382,7 @@
                     {
                         "name": "id",
                         "in": "query",
-                        "description": "Client ID",
+                        "description": "ID",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -283,13 +391,19 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Client has been deleted",
+                        "description": "Клиент удален",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка в сервере",
                         "content": {
                             "application/json": {}
                         }

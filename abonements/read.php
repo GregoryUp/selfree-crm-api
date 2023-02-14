@@ -3,25 +3,25 @@
 require_once '../vendor/autoload.php';
 
 include_once '../config/database.php';
-include_once '../objects/leads.php';
+include_once '../objects/abonements.php';
 
 $db = new DataBase();
 $db = $db->getConnection();
 
 $id = intval($_GET['id']);
 
-$lead = new Leads($db);
+$abonement = new Abonements($db);
 
 try {
-    $lead = $lead->read($id);
+    $row = $abonement->read($id);
 
-    if ($lead == 'NOT_FOUND') {
+    if ($row == 'NOT_FOUND') {
         http_response_code(404);
-        exit($lead);
+        exit($row);
     }
 
     header('Content-Type: application/json');
-    echo json_encode($lead);
+    echo json_encode($row);
 } catch (PDOException $e) {
     http_response_code(500);
     echo 'ERROR_REQUEST';

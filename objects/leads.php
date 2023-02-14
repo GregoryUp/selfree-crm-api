@@ -54,9 +54,9 @@ class Leads
 
         if ($query->rowCount() == 0) return 'NOT_FOUND';
 
-        $client = $query->fetch(PDO::FETCH_ASSOC);
+        $row = $query->fetch(PDO::FETCH_ASSOC);
 
-        return $client;
+        return $row;
     }
 
     public function update($id, $data)

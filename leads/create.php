@@ -21,9 +21,15 @@ $comment = $_POST['comment'];
 $source = $_POST['source'];
 $status = $_POST['status'];
 
-$phoneNumberObject = $phoneNumberUtil->parse($phone, 'RU');
+try {
 
-if(!($phoneNumberUtil->isValidNumberForRegion($phoneNumberObject, 'RU'))) {
+    $phoneNumberObject = $phoneNumberUtil->parse($data['phone'], 'RU');
+
+    if(!($phoneNumberUtil->isValidNumberForRegion($phoneNumberObject, 'RU'))) {
+        throw new Exception();
+    }
+
+} catch (Exception $e) {
     http_response_code(400);
     exit(json_encode(['schema' => 'Phone is not valid']));
 }

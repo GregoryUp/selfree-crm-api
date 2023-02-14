@@ -1,9 +1,9 @@
 <?php
-
 require_once '../vendor/autoload.php';
 
 include_once '../config/database.php';
 include_once '../objects/leads.php';
+include_once '../objects/source_list.php';
 include_once '../functions/formatPhone.php';
 
 $db = new DataBase();
@@ -20,12 +20,30 @@ $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
 
 $data['phone'] = phone_format($data['phone']);
 
-$phoneNumberObject = $phoneNumberUtil->parse($data['phone'], 'RU');
+try {
 
-if(!($phoneNumberUtil->isValidNumberForRegion($phoneNumberObject, 'RU'))) {
+    $phoneNumberObject = $phoneNumberUtil->parse($data['phone'], 'RU');
+
+    if(!($phoneNumberUtil->isValidNumberForRegion($phoneNumberObject, 'RU'))) {
+        throw new Exception();
+    }
+
+} catch (Exception $e) {
     http_response_code(400);
     exit(json_encode(['schema' => 'Phone is not valid']));
 }
+
+
+$sourceList = new SourceList($db);
+
+$rows = $sourceList->getList();
+$sources = array_column($rows, 'slug');
+
+if(!in_array($data['source'], $sources)) {
+    http_response_code(400);
+    exit(json_encode(['schema' => 'Such source doesn\'t exist']));
+}
+
 
 $lead = new Leads($db);
 

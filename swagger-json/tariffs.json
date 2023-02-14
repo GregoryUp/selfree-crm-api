@@ -12,12 +12,12 @@
     ],
     "tags": [
         {
-            "name": "leads",
-            "description": "Лиды"
+            "name": "tariffs",
+            "description": "Тарифы"
         },
         {
-            "name": "Source Leads",
-            "description": "Трафик лидов"
+            "name": "abonements",
+            "description": "Абонементы"
         }
     ],
     "schemes": [
@@ -25,39 +25,17 @@
         "http"
     ],
     "paths": {
-        "/leads/list.php": {
+        "/tariffs/read.php": {
             "get": {
-                "summary": "Список лидов",
+                "description": "View tariff",
                 "tags": [
-                    "leads"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Список лидов",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка в сервере",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/leads/read.php": {
-            "get": {
-                "summary": "Информация о лиде",
-                "tags": [
-                    "leads"
+                    "tariffs"
                 ],
                 "parameters": [
                     {
                         "name": "id",
                         "in": "query",
-                        "description": "Lead ID",
+                        "description": "Tariff ID",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -66,278 +44,16 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Информация о лиде",
+                        "description": "Tariff",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "404": {
-                        "description": "NOT FOUND",
+                        "description": "Not Found",
                         "content": {
                             "application/json": {}
                         }
-                    },
-                    "500": {
-                        "description": "Ошибка в сервере",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/leads/create.php": {
-            "post": {
-                "summary": "Создание лида",
-                "tags": [
-                    "leads"
-                ],
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "parameters": [
-                    {
-                        "name": "name",
-                        "in": "formData",
-                        "description": "ФИО",
-                        "required": true
-                    },
-                    {
-                        "name": "phone",
-                        "in": "formData",
-                        "description": "Телефон",
-                        "required": true
-                    },
-                    {
-                        "name": "email",
-                        "in": "formData",
-                        "description": "Email",
-                        "required": false
-                    },
-                    {
-                        "name": "comment",
-                        "in": "formData",
-                        "description": "Комментарий к лиду",
-                        "required": true
-                    },
-                    {
-                        "name": "source",
-                        "in": "formData",
-                        "description": "Слаг источника",
-                        "type": "string",
-                        "required": true
-                    },
-                    {
-                        "name": "status",
-                        "in": "formData",
-                        "description": "Номер статуса",
-                        "type": "integer",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Получение списка лидов",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка в сервере",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/leads/update.php": {
-            "patch": {
-                "summary": "Обновить данные лида",
-                "tags": [
-                    "leads"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "query",
-                        "description": "ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "data",
-                        "in": "body",
-                        "description": "Данные для обновления",
-                        "required": true,
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "name": {
-                                    "type": "string",
-                                    "example": "Тестов Тест Тестович"
-                                },
-                                "phone": {
-                                    "type": "string",
-                                    "example": "+7(777)777-77-77"
-                                },
-                                "email": {
-                                    "type": "string",
-                                    "example": "example@mail.ru"
-                                },
-                                "source": {
-                                    "type": "string",
-                                    "example": "from-site"
-                                },
-                                "status": {
-                                    "type": "number",
-                                    "example": "1"
-                                },
-                                "comment": {
-                                    "type": "string",
-                                    "example": "Комментарий"
-                                }
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Данные о лиде обновлены",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "400": {
-                        "description": "Ошибка в запросе",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка в сервере",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/leads/setStatus.php": {
-            "put": {
-                "summary": "Установить статус лида",
-                "tags": [
-                    "leads"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "query",
-                        "description": "ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "status",
-                        "in": "body",
-                        "description": "Статус лида",
-                        "required": true,
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "status": {
-                                    "type": "number",
-                                    "example": 1
-                                }
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Статус лида установлен",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "400": {
-                        "description": "Ошибка в запросе",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка в сервере",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/leads/delete.php": {
-            "delete": {
-                "summary": "Удалить лида",
-                "tags": [
-                    "leads"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "query",
-                        "description": "ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Лид удалён",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "400": {
-                        "description": "Ошибка в запросе",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка в сервере",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/source_list/read.php": {
-            "get": {
-                "summary": "Информация об источнике лидов",
-                "tags": [
-                    "Source Leads"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "query",
-                        "description": "ID",
-                        "required": true,
-                        "schema": {
-                            "type": "number"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Получен источник лидов"
                     },
                     "500": {
                         "description": "Server Error",
@@ -348,21 +64,27 @@
                 }
             }
         },
-        "/source_list/list.php": {
+        "/tariffs/list.php": {
             "get": {
-                "summary": "Список источников",
+                "description": "Tariff list",
                 "tags": [
-                    "Source Leads"
+                    "tariffs"
                 ],
                 "responses": {
                     "200": {
-                        "description": "Получен сисок источников",
+                        "description": "Tariff list",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Ошибка в сервере",
+                        "description": "Server Error",
                         "content": {
                             "application/json": {}
                         }
@@ -370,11 +92,11 @@
                 }
             }
         },
-        "/source_list/create.php": {
+        "/tariffs/create.php": {
             "post": {
-                "summary": "Создание источника лидов",
+                "description": "Create tariff",
                 "tags": [
-                    "Source Leads"
+                    "tariffs"
                 ],
                 "consumes": [
                     "multipart/form-data"
@@ -383,31 +105,37 @@
                     {
                         "name": "name",
                         "in": "formData",
-                        "description": "Название",
+                        "description": "Tariff name",
                         "required": true
                     },
                     {
-                        "name": "slug",
+                        "name": "duration",
                         "in": "formData",
-                        "description": "Слаг",
+                        "description": "Lesson duration",
+                        "required": true
+                    },
+                    {
+                        "name": "price",
+                        "in": "formData",
+                        "description": "Tariff price",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Источник создан",
+                        "description": "Tariff created",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "400": {
-                        "description": "Ошибка в запросе",
+                        "description": "Schema error",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Ошибка в сервере",
+                        "description": "Server Error",
                         "content": {
                             "application/json": {}
                         }
@@ -415,11 +143,11 @@
                 }
             }
         },
-        "/source_list/update.php": {
+        "/tariffs/update.php": {
             "patch": {
-                "summary": "Обновить данные об источнике лида",
+                "description": "Update tariff data",
                 "tags": [
-                    "Source Leads"
+                    "tariffs"
                 ],
                 "parameters": [
                     {
@@ -428,24 +156,28 @@
                         "description": "ID",
                         "required": true,
                         "schema": {
-                            "type": "number"
+                            "type": "integer"
                         }
                     },
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "Данные для обновления",
+                        "description": "Tariff data to update",
                         "required": true,
                         "schema": {
                             "type": "object",
                             "properties": {
                                 "name": {
                                     "type": "string",
-                                    "example": "Тестов"
+                                    "example": "Имя тарифа"
                                 },
-                                "slug": {
-                                    "type": "string",
-                                    "example": "source-1"
+                                "duration": {
+                                    "type": "number",
+                                    "example": "60"
+                                },
+                                "price": {
+                                    "type": "number",
+                                    "example": "4000"
                                 }
                             }
                         }
@@ -453,19 +185,19 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Данные источника обновлены",
+                        "description": "Tariff updated",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "400": {
-                        "description": "Ошибка в запросе",
+                        "description": "Schema error",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Ошибка в сервере",
+                        "description": "Server Error",
                         "content": {
                             "application/json": {}
                         }
@@ -473,17 +205,17 @@
                 }
             }
         },
-        "/source_list/delete.php": {
+        "/tariffs/delete.php": {
             "delete": {
-                "summary": "Удалить источник лидов",
+                "description": "Delete tariff",
                 "tags": [
-                    "Source Leads"
+                    "tariffs"
                 ],
                 "parameters": [
                     {
                         "name": "id",
                         "in": "query",
-                        "description": "Client ID",
+                        "description": "Tariff ID",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -492,19 +224,226 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Источник удалён",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "400": {
-                        "description": "Ошибка в запросе",
+                        "description": "Tariff has been deleted",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Ошибка в сервере",
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/abonements/read.php": {
+            "get": {
+                "description": "View abonement",
+                "tags": [
+                    "abonements"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "Abonement ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Abonement",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/abonements/list.php": {
+            "get": {
+                "description": "Abonement list",
+                "tags": [
+                    "abonements"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Abonement list",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/abonements/create.php": {
+            "post": {
+                "description": "Create abonement",
+                "tags": [
+                    "abonements"
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "formData",
+                        "description": "Abonement name",
+                        "required": true
+                    },
+                    {
+                        "name": "tariff_id",
+                        "in": "formData",
+                        "description": "Tariff ID",
+                        "required": true
+                    },
+                    {
+                        "name": "price",
+                        "in": "formData",
+                        "description": "Abonement price",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tariff created",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Schema error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/abonements/update.php": {
+            "patch": {
+                "description": "Update abonement data",
+                "tags": [
+                    "abonements"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Abonement data to update",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example": "Имя абонемента"
+                                },
+                                "tariff_id": {
+                                    "type": "number",
+                                    "example": "1"
+                                },
+                                "price": {
+                                    "type": "number",
+                                    "example": "4000"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Abonement updated",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Schema error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/abonements/delete.php": {
+            "delete": {
+                "description": "Delete abonement",
+                "tags": [
+                    "abonements"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "Tariff ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Abonement has been deleted",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
                         "content": {
                             "application/json": {}
                         }
