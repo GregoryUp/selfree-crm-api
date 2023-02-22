@@ -2,17 +2,20 @@
 
 require_once '../vendor/autoload.php';
 
-include_once '../config/database.php';
-include_once '../objects/clients.php';
-include_once '../functions/formatPhone.php';
+require_once '../config/database.php';
+require_once '../objects/clients.php';
+require_once '../functions/formatPhone.php';
 
 $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
 
 $db = new Database();
 $db = $db->getConnection();
 
-if (empty($_POST))
-    exit(json_encode(['status' => "Data is empty"]));
+if (empty($_POST)) {
+    http_response_code(400);
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => 'Data is empty']));
+}
 
 $surname = $_POST['surname'];
 $name = $_POST['name'];
@@ -22,23 +25,41 @@ $phone = phone_format($_POST['phone']);
 $date_birth = $_POST['date_birth'];
 
 if (!in_array($gender, ['male', 'female'])) {
-    http_response_code(403);
-    exit(json_encode(['schema' => 'gender field must be \'male\' or \'female\'']));
+    http_response_code(400);
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => 'gender field must be \'male\' or \'female\'']));
 }
 
 $phoneNumberObject = $phoneNumberUtil->parse($phone, 'RU');
 
-if(!($phoneNumberUtil->isValidNumberForRegion($phoneNumberObject, 'RU'))) {
-    http_response_code(403);
-    exit(json_encode(['schema' => 'Phone is not valid']));
+if (!($phoneNumberUtil->isValidNumberForRegion($phoneNumberObject, 'RU'))) {
+    http_response_code(400);
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => 'Phone is not valid']));
 }
 
 $client = new Clients($db);
 
-try {
-    $client->create($name, $surname, $middlename, $gender, $phone, $date_birth);
-    echo 'OK';
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo 'ERROR_REQUEST';
+
+$client_create_result = $client->create([
+    'surname'    => $surname,
+    'name'       => $name,
+    'middlename' => $middlename,
+    'gender'     => $gender,
+    'phone'      => $phone,
+    'date_birth' => $date_birth
+]);
+
+if($client_create_result == 'ERROR_PARAMETER') {
+    http_response_code(400);
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => "{$client_create_result}"]));
 }
+
+if($client_create_result == 'QUERY_FAILED') {
+    http_response_code(500);
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => "{$client_create_result}"]));
+}
+
+echo 'OK';

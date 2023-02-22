@@ -1,26 +1,32 @@
 <?php
 
-include_once '../config/database.php';
-include_once '../objects/clients.php';
+require_once '../config/database.php';
+require_once '../objects/clients.php';
 
 $db = new Database();
 $db = $db->getConnection();
 
-$id = intval($_GET['id']) != 0 ? intval($_GET['id']) : die("ERROR_PARAMETER");
+$id = $_GET['id'];
 
 $client = new Clients($db);
 
-try {
-    $client = $client->read($id);
+$client = $client->read($id);
 
-    if ($client == 'NOT_FOUND') {
-        http_response_code(404);
-        exit($client);
-    }
+header('Content-Type: application/json');
 
-    header('Content-Type: application/json');
-    echo json_encode($client);
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo 'ERROR_REQUEST';
+if($client == 'ERROR_PARAMETER') {
+    http_response_code(400);
+    exit(json_encode(['error' => true, 'message' => "{$client}"]));
 }
+
+if($client == 'QUERY_FAILED') {
+    http_response_code(500);
+    exit(json_encode(['error' => true, 'message' => "{$client}"]));
+}
+
+if ($client == 'NOT_FOUND') {
+    http_response_code(404);
+    exit(json_encode(['error' => true, 'message' => "{$client}"]));
+}
+
+echo json_encode($client);

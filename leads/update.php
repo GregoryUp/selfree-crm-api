@@ -1,36 +1,40 @@
 <?php
+define('DEBUG', true);
+
 require_once '../vendor/autoload.php';
 
-include_once '../config/database.php';
-include_once '../objects/leads.php';
-include_once '../objects/source_list.php';
-include_once '../functions/formatPhone.php';
+require_once '../config/database.php';
+require_once '../objects/leads.php';
+require_once '../objects/lead_source_list.php';
+require_once '../functions/formatPhone.php';
 
 $db = new DataBase();
 $db = $db->getConnection();
 
-$id = filter_var($_GET['id'], FILTER_VALIDATE_INT) ? intval($_GET['id']) : die("ERROR_PARAMETER");
-$json = file_get_contents("php://input");
-
-$data = json_decode($json, true);
-if($data === null) die("INVALID_JSON");
-if(empty($data)) die("EMPTY_DATA");
-
 $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
 
-$data['phone'] = phone_format($data['phone']);
+$id = $_GET['id'];
+$lead_fields = json_decode(file_get_contents("php://input"), true);
+$lead_fields['phone'] = phone_format($lead_fields['phone']);
 
-try {
-
-    $phoneNumberObject = $phoneNumberUtil->parse($data['phone'], 'RU');
-
-    if(!($phoneNumberUtil->isValidNumberForRegion($phoneNumberObject, 'RU'))) {
-        throw new Exception();
-    }
-
-} catch (Exception $e) {
+if ($lead_fields === null) {
     http_response_code(400);
-    exit(json_encode(['schema' => 'Phone is not valid']));
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => 'INVALID_JSON']));
+}
+
+if (empty($lead_fields)) {
+    http_response_code(400);
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => 'EMPTY_DATA']));
+}
+
+
+$phoneNumberObject = $phoneNumberUtil->parse($lead_fields['phone'], 'RU');
+if (!($phoneNumberUtil->isValidNumberForRegion($phoneNumberObject, 'RU'))) {
+    http_response_code(400);
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => 'Phone is not valid']));
 }
 
 
@@ -39,20 +43,26 @@ $sourceList = new SourceList($db);
 $rows = $sourceList->getList();
 $sources = array_column($rows, 'slug');
 
-if(!in_array($data['source'], $sources)) {
+if (!in_array($lead_fields['source'], $sources)) {
     http_response_code(400);
-    exit(json_encode(['schema' => 'Such source doesn\'t exist']));
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => 'Source does not exist']));
 }
-
 
 $lead = new Leads($db);
 
-try{
+$lead_update_result = $lead->update($id, $lead_fields);
 
-    $lead->update($id, $data);
-    echo 'OK';
-
-} catch(PDOException $e) {
-    http_response_code(500);
-    echo 'ERROR_REQUEST';
+if($lead_update_result == 'ERROR_PARAMETER') {
+    http_response_code(400);
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => "{$lead_update_result}"]));
 }
+
+if($lead_update_result == 'QUERY_FAILED') {
+    http_response_code(500);
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => "{$lead_update_result}"]));
+}
+
+echo 'OK';

@@ -2,36 +2,42 @@
 
 require_once '../vendor/autoload.php';
 
-include_once '../config/database.php';
-include_once '../objects/leads.php';
+require_once '../config/database.php';
+require_once '../objects/leads.php';
 
 $db = new DataBase();
 $db = $db->getConnection();
 
-$id = filter_var($_GET['id'], FILTER_VALIDATE_INT) ? intval($_GET['id']) : die('ERROR_PARAMETER');
+$id = $_GET['id'];
 
-$json = file_get_contents("php://input");
+$leadFieldStatusId = json_decode(file_get_contents("php://input"), true);
 
-$data = json_decode($json, true);
-if($data === null) die("INVALID_JSON");
-if(empty($data)) die("EMPTY_DATA");
-
-$status = filter_var($data['status'], FILTER_VALIDATE_INT);
-
-if(!$status) {
+if ($leadFieldStatusId === null) {
     http_response_code(400);
-    exit(json_encode(['schema' => 'Status is not valid']));
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => 'INVALID_JSON']));
 }
 
+if (empty($leadFieldStatusId['status'])) {
+    http_response_code(400);
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => 'EMPTY_DATA']));
+}
 
 $lead = new Leads($db);
 
-try{
+$lead_setStatus_result = $lead->setStatus($id, $leadFieldStatusId['status']);
 
-    $lead->setStatus($id, $status);
-    echo 'OK';
-
-} catch(PDOException $e) {
-    http_response_code(500);
-    echo 'ERROR_REQUEST';
+if($lead_setStatus_result == 'ERROR_PARAMETER') {
+    http_response_code(400);
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => "{$lead_setStatus_result}"]));
 }
+
+if($lead_setStatus_result == 'QUERY_FAILED') {
+    http_response_code(500);
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => "{$lead_setStatus_result}"]));
+}
+
+echo 'OK';

@@ -318,7 +318,7 @@
                 }
             }
         },
-        "/source_list/read.php": {
+        "/leads/source_list/read.php": {
             "get": {
                 "summary": "Информация об источнике лидов",
                 "tags": [
@@ -348,7 +348,7 @@
                 }
             }
         },
-        "/source_list/list.php": {
+        "/leads/source_list/list.php": {
             "get": {
                 "summary": "Список источников",
                 "tags": [
@@ -370,7 +370,7 @@
                 }
             }
         },
-        "/source_list/create.php": {
+        "/leads/source_list/create.php": {
             "post": {
                 "summary": "Создание источника лидов",
                 "tags": [
@@ -415,7 +415,7 @@
                 }
             }
         },
-        "/source_list/update.php": {
+        "/leads/source_list/update.php": {
             "patch": {
                 "summary": "Обновить данные об источнике лида",
                 "tags": [
@@ -473,7 +473,7 @@
                 }
             }
         },
-        "/source_list/delete.php": {
+        "/leads/source_list/delete.php": {
             "delete": {
                 "summary": "Удалить источник лидов",
                 "tags": [

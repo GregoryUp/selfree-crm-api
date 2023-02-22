@@ -16,52 +16,63 @@ class Leads
         $this->pdo = null;
     }
 
-    public function create($name, $phone, $email, $source, $status, $comment = '')
+    public function create($lead)
     {
+        if(!filter_var($lead['status'], FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+
+        $name = $lead['name'];
+        $phone = $lead['phone'];
+        $email = $lead['email'];
+        $source = $lead['source'];
+        $status = $lead['status'];
+        $comment = $lead['comment'];
+
         $date_create = date('Y-m-d H:s:i');
 
-        $query = $this->pdo->prepare("INSERT INTO `{$this->table_name}` (name, phone, email, comment, source, date_create, status) VALUES(?, ?, ?, ?, ?, ?, ?)");
-
-        $query->execute([$name, $phone, $email, $comment, $source, $date_create, $status]);
-
-        return $this->pdo->lastInsertId();
+        try {
+            $query = $this->pdo->prepare("INSERT INTO `{$this->table_name}` (name, phone, email, comment, source, date_create, status) VALUES(?, ?, ?, ?, ?, ?, ?)");
+            $query->execute([$name, $phone, $email, $comment, $source, $date_create, $status]);
+            return $this->pdo->lastInsertId();
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
     }
 
     public function getList()
     {
-        $query = $this->pdo->prepare("SELECT * FROM `{$this->table_name}`");
+        try {
+            $query = $this->pdo->prepare("SELECT * FROM `{$this->table_name}`");
 
-        $query->execute();
-        $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+            $query->execute();
+            $rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        return $rows;
+            return $rows;
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
     }
 
     public function read($id)
     {
-        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'NO_LEAD';
+        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
 
-        $lead_id = intval($id);
+        try {
+            $query = $this->pdo->prepare("SELECT * FROM `{$this->table_name}` WHERE id = :id ORDER BY id DESC LIMIT 1");
+            $query->execute(['id' => $id]);
 
-        if ($lead_id == 0) return 'NO_LEAD';
+            if ($query->rowCount() == 0) return 'NOT_FOUND';
 
-        $query = $this->pdo->prepare("SELECT * FROM `{$this->table_name}` WHERE id = :id ORDER BY id DESC LIMIT 1");
-        $error = $this->pdo->errorInfo();
-
-        if (!empty($error[1])) return 'QUERY_FAILED';
-
-        $query->execute(['id' => $lead_id]);
-
-        if ($query->rowCount() == 0) return 'NOT_FOUND';
-
-        $row = $query->fetch(PDO::FETCH_ASSOC);
-
-        return $row;
+            $row = $query->fetch(PDO::FETCH_ASSOC);
+            return $row;
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
     }
 
     public function update($id, $data)
     {
-        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'NO_LEAD';
+        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+        if (!filter_var($data['status'], FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
 
         $name = $data['name'];
         $phone = $data['phone'];
@@ -75,13 +86,14 @@ class Leads
             $query->execute([$name, $phone, $email, $source, $status, $comment, $id]);
             return $query->rowCount();
         } catch (PDOException $e) {
-            return "QUERY_FAILED";
+            return 'QUERY_FAILED';
         }
     }
 
     public function setStatus($id, $status)
     {
-        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'NO_LEAD';
+        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+        if(!filter_var($status, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
 
         try {
 
@@ -92,21 +104,17 @@ class Leads
 
             return $query->rowCount();
         } catch (PDOException $e) {
-            return "QUERY_FAILED " . $e->getMessage();
+            return 'QUERY_FAILED';
         }
     }
 
     public function delete($id)
     {
-        if (!filter_var($id, FILTER_VALIDATE_INT))
-            return 'NO_LEAD';
-
-        $lead_id = intval($id);
-        if ($lead_id <= 0) return 'NO_LEAD';
+        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
 
         try {
             $query = $this->pdo->prepare("DELETE FROM `{$this->table_name}` WHERE id = ?");
-            $query->execute([$lead_id]);
+            $query->execute([$id]);
             return $query->rowCount();
         } catch (PDOException $e) {
             return 'QUERY_FAILED';

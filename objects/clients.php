@@ -17,6 +17,26 @@ class Clients
         $this->pdo = null;
     }
 
+    public function create($client)
+    {
+
+        $surname = $client['surname'];
+        $name = $client['name'];
+        $middlename = $client['middlename'];
+        $gender = $client['gender'];
+        $phone = $client['phone'];
+        $date_birth = $client['date_birth'];
+
+        try {
+            $query = $this->pdo->prepare("INSERT INTO `{$this->table_name}` (surname, name, middlename, gender, date_birth, phone) VALUES(?, ?, ?, ?, ?, ?)");
+
+            $query->execute([$surname, $name, $middlename, $gender, $date_birth, $phone]);
+            return $this->pdo->lastInsertId();
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
+    }
+
     public function read($client_id)
     {
         if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
@@ -30,6 +50,39 @@ class Clients
             $client = $query->fetch(PDO::FETCH_ASSOC);
 
             return $client;
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
+    }
+
+    public function update($client_id, $fields)
+    {
+        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+
+        $surname = $fields['surname'];
+        $name = $fields['name'];
+        $middlename = $fields['middlename'];
+        $gender = $fields['gender'];
+        $date_birth = $fields['date_birth'];
+        $phone = $fields['phone'];
+
+        try {
+            $query = $this->pdo->prepare("UPDATE `{$this->table_name}` SET surname = ?, name = ?, middlename = ?, gender = ?, date_birth = ?, phone = ? WHERE id = ?");
+            $query->execute([$surname, $name, $middlename, $gender, $date_birth, $phone, $client_id]);
+            return $query->rowCount();
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
+    }
+
+    public function delete($client_id)
+    {
+        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+
+        try {
+            $query = $this->pdo->prepare("DELETE FROM `{$this->table_name}` WHERE id = ?");
+            $query->execute([$client_id]);
+            return $query->rowCount();
         } catch (PDOException $e) {
             return 'QUERY_FAILED';
         }
@@ -52,7 +105,7 @@ class Clients
 
             return $rows;
         } catch (PDOException $e) {
-            return "QUERY_FAILED";
+            return 'QUERY_FAILED';
         }
     }
 
@@ -64,39 +117,7 @@ class Clients
             $count = $query->fetchAll(PDO::FETCH_ASSOC);
             return $count[0]['count'];
         } catch (PDOException $e) {
-            return "QUERY_FAILED";
-        }
-    }
-
-    public function create($name, $surname, $middlename, $gender, $phone, $date_birth)
-    {
-        try {
-            $query = $this->pdo->prepare("INSERT INTO `{$this->table_name}` (surname, name, middlename, gender, date_birth, phone) VALUES(?, ?, ?, ?, ?, ?)");
-
-            $query->execute([$surname, $name, $middlename, $gender, $date_birth, $phone]);
-            return $this->pdo->lastInsertId();
-        } catch (PDOException $e) {
-            return "QUERY_FAILED";
-        }
-    }
-
-    public function update($client_id, $data)
-    {
-        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
-
-        $surname = $data['surname'];
-        $name = $data['name'];
-        $middlename = $data['middlename'];
-        $gender = $data['gender'];
-        $date_birth = $data['date_birth'];
-        $phone = $data['phone'];
-
-        try {
-            $query = $this->pdo->prepare("UPDATE `{$this->table_name}` SET surname = ?, name = ?, middlename = ?, gender = ?, date_birth = ?, phone = ? WHERE id = ?");
-            $query->execute([$surname, $name, $middlename, $gender, $date_birth, $phone, $client_id]);
-            return $query->rowCount();
-        } catch (PDOException $e) {
-            return "QUERY_FAILED";
+            return 'QUERY_FAILED';
         }
     }
 
@@ -113,25 +134,42 @@ class Clients
             if ($check_query->rowCount() == 0) return 'NOT_FOUND';
 
             $query = $this->pdo->prepare("UPDATE `{$this->table_name}` SET tariff_id = :tariff_id WHERE id = :id");
-            $query->bindValue(':id', $client_id);
-            $query->bindValue(':tariff_id', $tariff_id);
+            $query->bindValue(':id', $client_id, PDO::PARAM_INT);
+            $query->bindValue(':tariff_id', $tariff_id, PDO::PARAM_INT);
             $query->execute();
             return $query->rowCount();
         } catch (PDOException $e) {
-            return "QUERY_FAILED";
+            return 'QUERY_FAILED';
         }
     }
 
-    public function delete($client_id)
+    public function setAbonement($client_id, $abonement_id)
     {
         if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+        if (!filter_var($abonement_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
 
         try {
-            $query = $this->pdo->prepare("DELETE FROM `{$this->table_name}` WHERE id = ?");
-            $query->execute([$client_id]);
-            return $query->rowCount();
+
+            $check_client_query = $this->pdo->prepare("SELECT id FROM `{$this->table_name}` WHERE id = :id");
+            $check_client_query->bindValue(':id', $client_id, PDO::PARAM_INT);
+            $check_client_query->execute();
+            if ($check_client_query->rowCount() == 0) return 'NOT_FOUND';
+
+            $check_abonement_query = $this->pdo->prepare("SELECT id FROM `clients_abonements` WHERE client_id = :client_id AND abonement_id = :abonement_id");
+            $check_abonement_query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+            $check_abonement_query->bindValue(':abonement_id', $abonement_id, PDO::PARAM_INT);
+            $check_abonement_query->execute();
+            if ($check_abonement_query->rowCount() > 0) {
+                return $check_abonement_query->rowCount();
+            } else {
+                $query = $this->pdo->prepare("INSERT INTO `clients_abonements` SET client_id = :client_id, abonement_id = :abonement_id");
+                $query->bindValue(':id', $client_id, PDO::PARAM_INT);
+                $query->bindValue(':abonement_id', $abonement_id, PDO::PARAM_INT);
+                $query->execute();
+                return $query->rowCount();
+            }
         } catch (PDOException $e) {
-            return "QUERY_FAILED";
+            return 'QUERY_FAILED';
         }
     }
 }
