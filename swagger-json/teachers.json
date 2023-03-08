@@ -99,7 +99,7 @@
                 }
             }
         },
-        "/teachers/getCountOfTeachers.php": {
+        "/teachers/count.php": {
             "get": {
                 "summary": "Кол-во преподавателей",
                 "tags": [

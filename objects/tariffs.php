@@ -16,34 +16,43 @@ class Tariffs
         $this->pdo = null;
     }
 
-    public function create($name, $duration, $price)
+    public function create($tariff)
     {
-        $query = $this->pdo->prepare("INSERT INTO `{$this->table_name}` (name, duration, price) VALUES(?, ?, ?)");
+        $name = $tariff['name'];
+        $duration = $tariff['duration'];
+        $price = $tariff['price'];
 
-        $query->execute([$name, $duration, $price]);
+        try {
+            $query = $this->pdo->prepare("INSERT INTO `{$this->table_name}` (name, duration, price) VALUES(?, ?, ?)");
+            $query->execute([$name, $duration, $price]);
 
-        return $this->pdo->lastInsertId();
+            return $this->pdo->lastInsertId();
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
     }
 
     public function getList()
     {
-        $query = $this->pdo->prepare("SELECT * FROM `{$this->table_name}`");
-        $query->execute();
-        $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $query = $this->pdo->prepare("SELECT * FROM `{$this->table_name}`");
+            $query->execute();
+            $rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        return $rows;
+            return $rows;
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
     }
 
     public function read($id)
     {
-        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'NO_TARIFF';
-
-        $tariff_id = intval($id);
-        if ($tariff_id == 0) return 'NO_FOUND';
+        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+        $id = intval($id);
 
         try {
             $query = $this->pdo->prepare("SELECT * FROM `{$this->table_name}` WHERE id = :id ORDER BY id DESC LIMIT 1");
-            $query->execute(['id' => $tariff_id]);
+            $query->execute(['id' => $id]);
 
             if ($query->rowCount() == 0) return 'NOT_FOUND';
 
@@ -58,7 +67,7 @@ class Tariffs
 
     public function update($id, $data)
     {
-        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'NO_TARIFF';
+        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
 
         $name = $data['name'];
         $duration = $data['duration'];
@@ -75,11 +84,10 @@ class Tariffs
 
     public function delete($id)
     {
-        if (!filter_var($id, FILTER_VALIDATE_INT))
-            return 'NO_TARIFF';
+        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
 
         $id = intval($id);
-        if ($id <= 0) return 'NO_TARIFF';
+        if ($id <= 0) return 'ERROR_PARAMETER';
 
         try {
             $query = $this->pdo->prepare("DELETE FROM `{$this->table_name}` WHERE id = ?");

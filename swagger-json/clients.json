@@ -264,60 +264,6 @@
                 }
             }
         },
-        "/clients/setTariff.php": {
-            "put": {
-                "summary": "Установить тариф",
-                "tags": [
-                    "clients"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "query",
-                        "description":"ID клиента",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "tariff",
-                        "in": "body",
-                        "description": "Тариф",
-                        "required":  true,
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "tariff_id": {
-                                    "type": "integer",
-                                    "example": 1
-                                }
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Тариф обновлен",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "400": {
-                        "description":"Ошибка в запросе",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка в сервере",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
         "/clients/setAbonement.php": {
             "put": {
                 "summary":"Установить абонемент",

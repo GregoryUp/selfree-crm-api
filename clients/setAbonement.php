@@ -1,4 +1,6 @@
 <?php
+define('DEBUG', 1);
+
 require_once '../config/database.php';
 require_once '../objects/clients.php';
 require_once '../objects/abonements.php';
@@ -6,7 +8,7 @@ require_once '../objects/abonements.php';
 $db = new Database();
 $db = $db->getConnection();
 
-$id = $_GET['client_id'];
+$client_id = $_GET['client_id'];
 $clientFieldAbonementId = json_decode(file_get_contents("php://input"), true);
 
 if ($clientFieldAbonementId === null) {
@@ -23,9 +25,10 @@ if (empty($clientFieldAbonementId['abonement_id'])) {
 
 $client = new Clients($db);
 $abonement = new Abonements($db);
+$abonement_id = $clientFieldAbonementId['abonement_id'];
 
 
-$abonement_read_result = $abonement->read($clientFieldAbonementId['abonement_id']);
+$abonement_read_result = $abonement->read($abonement_id);
 
 if ($abonement_read_result == 'ERROR_PARAMETER') {
     http_response_code(400);
@@ -36,7 +39,7 @@ if ($abonement_read_result == 'ERROR_PARAMETER') {
 if ($abonement_read_result == 'NOT_FOUND') {
     http_response_code(404);
     header('Content-Type: application/json');
-    exit(json_encode(['error' => true, 'message' => 'Such tariff does not exist']));
+    exit(json_encode(['error' => true, 'message' => 'Such abonement does not exist']));
 }
 
 if ($abonement_read_result == 'QUERY_FAILED') {
@@ -45,7 +48,7 @@ if ($abonement_read_result == 'QUERY_FAILED') {
     exit(json_encode(['error' => true, 'message' => "{$abonement_read_result}"]));
 }
 
-$client_setAbonement_result = $client->setTariff($id, $clientFieldAbonementId['tariff_id']);
+$client_setAbonement_result = $client->setAbonement($client_id, $abonement_id);
 
 if ($client_setAbonement_result == 'ERROR_PARAMETER') {
     http_response_code(400);

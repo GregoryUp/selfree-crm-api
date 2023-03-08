@@ -328,6 +328,12 @@
                         "required": true
                     },
                     {
+                        "name": "duration",
+                        "in": "formData",
+                        "description": "Abonement duration (days)",
+                        "required": true
+                    },
+                    {
                         "name": "price",
                         "in": "formData",
                         "description": "Abonement price",
@@ -385,8 +391,12 @@
                                     "example": "Имя абонемента"
                                 },
                                 "tariff_id": {
-                                    "type": "number",
+                                    "type": "integer",
                                     "example": "1"
+                                },
+                                "duration": {
+                                    "type": "integer",
+                                    "example": "30"
                                 },
                                 "price": {
                                     "type": "number",

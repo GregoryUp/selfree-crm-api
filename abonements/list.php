@@ -1,19 +1,21 @@
 <?php
 require_once '../vendor/autoload.php';
 
-include_once '../config/database.php';
-include_once '../objects/abonements.php';
+require_once '../config/database.php';
+require_once '../objects/abonements.php';
 
 $db = new DataBase();
 $db = $db->getConnection();
 
+header('Content-Type: application/json');
+
 $abonement = new Abonements($db);
 
-try{
-    $rows = $abonement->getList();
-    header('Content-Type: application/json');
-    echo json_encode($rows);
-} catch(PDOException $e) {
+$abonement_getList_result = $abonement->getList();
+
+if($abonement_getList_result == 'QUERY_FAILED') {
     http_response_code(500);
-    echo 'ERROR_REQUEST';
+    exit(json_encode(['error' => true, 'message' => "{$abonement_getList_result}"]));
 }
+
+echo json_encode($abonement_getList_result);

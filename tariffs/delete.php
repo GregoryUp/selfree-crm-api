@@ -2,22 +2,28 @@
 
 require_once '../vendor/autoload.php';
 
-include_once '../config/database.php';
-include_once '../objects/tariffs.php';
+require_once '../config/database.php';
+require_once '../objects/tariffs.php';
 
 $db = new DataBase();
 $db = $db->getConnection();
 
-$id = intval($_GET['id']);
+$id = $_GET['id'];
 
 $tariff = new Tariffs($db);
 
-try{
+$tariff_delete_result = $tariff->delete($id);
 
-    $tariff->delete($id);
-    echo 'OK';
-
-} catch(PDOException $e) {
-    http_response_code(500);
-    echo 'ERROR_REQUEST';
+if($tariff_delete_result == 'ERROR_PARAMETER') {
+    http_response_code(400);
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => "{$tariff_delete_result}"]));
 }
+
+if($tariff_delete_result == 'QUERY_FAILED') {
+    http_response_code(500);
+    header('Content-Type: application/json');
+    exit(json_encode(['error' => true, 'message' => "{$tariff_delete_result}"]));
+}
+
+echo 'OK';

@@ -37,13 +37,13 @@ class Clients
         }
     }
 
-    public function read($client_id)
+    public function read($id)
     {
-        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
 
         try {
             $query = $this->pdo->prepare("SELECT * FROM `{$this->table_name}` WHERE id = :id ORDER BY id DESC LIMIT 1");
-            $query->execute(['id' => $client_id]);
+            $query->execute(['id' => $id]);
 
             if ($query->rowCount() == 0) return 'NOT_FOUND';
 
@@ -121,28 +121,6 @@ class Clients
         }
     }
 
-    public function setTariff($client_id, $tariff_id)
-    {
-        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
-        if (!filter_var($tariff_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
-
-        try {
-
-            $check_query = $this->pdo->prepare("SELECT id FROM `{$this->table_name}` WHERE id = :id");
-            $check_query->bindValue(':id', $client_id);
-            $check_query->execute();
-            if ($check_query->rowCount() == 0) return 'NOT_FOUND';
-
-            $query = $this->pdo->prepare("UPDATE `{$this->table_name}` SET tariff_id = :tariff_id WHERE id = :id");
-            $query->bindValue(':id', $client_id, PDO::PARAM_INT);
-            $query->bindValue(':tariff_id', $tariff_id, PDO::PARAM_INT);
-            $query->execute();
-            return $query->rowCount();
-        } catch (PDOException $e) {
-            return 'QUERY_FAILED';
-        }
-    }
-
     public function setAbonement($client_id, $abonement_id)
     {
         if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
@@ -150,21 +128,33 @@ class Clients
 
         try {
 
-            $check_client_query = $this->pdo->prepare("SELECT id FROM `{$this->table_name}` WHERE id = :id");
-            $check_client_query->bindValue(':id', $client_id, PDO::PARAM_INT);
-            $check_client_query->execute();
-            if ($check_client_query->rowCount() == 0) return 'NOT_FOUND';
+            $client_query = $this->pdo->prepare("SELECT id FROM `{$this->table_name}` WHERE id = :id");
+            $client_query->bindValue(':id', $client_id, PDO::PARAM_INT);
+            $client_query->execute();
+            if ($client_query->rowCount() == 0) return 'NOT_FOUND';
 
-            $check_abonement_query = $this->pdo->prepare("SELECT id FROM `clients_abonements` WHERE client_id = :client_id AND abonement_id = :abonement_id");
-            $check_abonement_query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
-            $check_abonement_query->bindValue(':abonement_id', $abonement_id, PDO::PARAM_INT);
-            $check_abonement_query->execute();
-            if ($check_abonement_query->rowCount() > 0) {
-                return $check_abonement_query->rowCount();
+            $client_abonement_query = $this->pdo->prepare("SELECT id FROM `clients_abonements` WHERE client_id = :client_id AND abonement_id = :abonement_id");
+            $client_abonement_query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+            $client_abonement_query->bindValue(':abonement_id', $abonement_id, PDO::PARAM_INT);
+            $client_abonement_query->execute();
+
+            $abonement_query = $this->pdo->prepare("SELECT * FROM `abonements` WHERE id = :id ORDER BY id DESC");
+            $abonement_query->bindValue(':id', $abonement_id, PDO::PARAM_INT);
+            $abonement_query->execute();
+            if ($abonement_query->rowCount() == 0) return 'NOT_FOUND';
+
+            $abonement = $abonement_query->fetch(PDO::FETCH_ASSOC);
+            $date_start = date('Y-m-d');
+            $date_end = date('Y-m-d', strtotime($date_start . ' +'. $abonement['duration'] .' days')); 
+
+            if ($client_abonement_query->rowCount() > 0) {
+                return $client_abonement_query->rowCount();
             } else {
-                $query = $this->pdo->prepare("INSERT INTO `clients_abonements` SET client_id = :client_id, abonement_id = :abonement_id");
-                $query->bindValue(':id', $client_id, PDO::PARAM_INT);
+                $query = $this->pdo->prepare("INSERT INTO `clients_abonements` SET client_id = :client_id, abonement_id = :abonement_id, date_start = :date_start, date_end = :date_end");
+                $query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
                 $query->bindValue(':abonement_id', $abonement_id, PDO::PARAM_INT);
+                $query->bindValue(':date_start', $date_start, PDO::PARAM_STR);
+                $query->bindValue(':date_end', $date_end, PDO::PARAM_STR);
                 $query->execute();
                 return $query->rowCount();
             }

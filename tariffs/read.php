@@ -2,27 +2,33 @@
 
 require_once '../vendor/autoload.php';
 
-include_once '../config/database.php';
-include_once '../objects/tariffs.php';
+require_once '../config/database.php';
+require_once '../objects/tariffs.php';
 
 $db = new DataBase();
 $db = $db->getConnection();
 
-$id = intval($_GET['id']);
+header('Content-Type: application/json');
+
+$id = $_GET['id'];
 
 $tariff = new Tariffs($db);
 
-try {
-    $tariff = $tariff->read($id);
+$tariff_read_result = $tariff->read($id);
 
-    if ($tariff == 'NOT_FOUND') {
-        http_response_code(404);
-        exit($tariff);
-    }
-
-    header('Content-Type: application/json');
-    echo json_encode($tariff);
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo 'ERROR_REQUEST';
+if($tariff_read_result == 'ERROR_PARAMETER') {
+    http_response_code(400);
+    exit(json_encode(['error' => true, 'message' => "{$tariff_read_result}"]));
 }
+
+if($tariff_read_result == 'QUERY_FAILED') {
+    http_response_code(500);
+    exit(json_encode(['error' => true, 'message' => "{$tariff_read_result}"]));
+}
+
+if ($tariff_read_result == 'NOT_FOUND') {
+    http_response_code(404);
+    exit(json_encode(['error' => true, 'message' => "{$tariff_read_result}"]));
+}
+
+echo json_encode($tariff_read_result);
