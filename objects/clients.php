@@ -82,6 +82,16 @@ class Clients
         try {
             $query = $this->pdo->prepare("DELETE FROM `{$this->table_name}` WHERE id = ?");
             $query->execute([$client_id]);
+
+            $query1 = $this->pdo->prepare("DELETE FROM `clients_abonements` WHERE client_id = ?");
+            $query1->execute([$client_id]);
+
+            $query1 = $this->pdo->prepare("DELETE FROM `clients_abonements` WHERE client_id = ?");
+            $query1->execute([$client_id]);
+
+            $query1 = $this->pdo->prepare("DELETE FROM `client_regular_lessons` WHERE client_id = ?");
+            $query1->execute([$client_id]);
+
             return $query->rowCount();
         } catch (PDOException $e) {
             return 'QUERY_FAILED';
@@ -145,7 +155,7 @@ class Clients
 
             $abonement = $abonement_query->fetch(PDO::FETCH_ASSOC);
             $date_start = date('Y-m-d');
-            $date_end = date('Y-m-d', strtotime($date_start . ' +'. $abonement['duration'] .' days')); 
+            $date_end = date('Y-m-d', strtotime($date_start . ' +' . $abonement['duration'] . ' days'));
 
             if ($client_abonement_query->rowCount() > 0) {
                 return $client_abonement_query->rowCount();
@@ -156,8 +166,114 @@ class Clients
                 $query->bindValue(':date_start', $date_start, PDO::PARAM_STR);
                 $query->bindValue(':date_end', $date_end, PDO::PARAM_STR);
                 $query->execute();
+                return $this->pdo->lastInsertId();
+            }
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
+    }
+
+    public function getAbonements($client_id)
+    {
+        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+
+        try {
+
+            $query = $this->pdo->prepare("SELECT ca.*, a.subject_id FROM `clients_abonements` AS ca
+            LEFT JOIN `abonements` AS a ON ca.abonement_id = a.id
+            WHERE ca.client_id = :client_id ORDER BY ca.id DESC");
+            $query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+            $query->execute();
+
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
+    }
+
+    public function deleteAbonement($client_id)
+    {
+        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+
+        try {
+
+            $query = $this->pdo->prepare("DELETE FROM `abonements` WHERE client_id = :client_id");
+            $query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+            $query->execute();
+
+            return $this->pdo->lastInsertId();
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
+    }
+
+    public function getRegularLessons($client_id) {
+        if(!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+
+        try {
+
+            $query = $this->pdo->prepare("SELECT * FROM `client_regular_lessons` WHERE client_id = :client_id");
+            $query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+            $query->execute();
+
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
+
+    }
+
+    public function setRegularLessons($client_id, $regularLesson)
+    {
+        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+
+        if (!($regularLesson['day_week'] <= 7 && $regularLesson['day_week'] >= 1)) return 'ERROR_PARAMETER';
+
+        $timestamp = strtotime($regularLesson['time']);
+        if (!($timestamp !== false && date('H:i', $timestamp) === $regularLesson['time'])) return 'ERROR_PARAMETER';
+
+        try {
+
+            $query = $this->pdo->prepare("SELECT * FROM `client_regular_lessons` WHERE client_id = :client_id AND day_week = :day_week");
+            $query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+            $query->bindValue(':day_week', $regularLesson['day_week'], PDO::PARAM_INT);
+            $query->execute();
+
+            if (empty($query->rowCount())) {
+                $query = $this->pdo->prepare("INSERT INTO `client_regular_lessons` (client_id, teacher_id, day_week, time) VALUES (:client_id, :teacher_id, :day_week, :time)");
+                $query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+                $query->bindValue(':teacher_id', $regularLesson['teacher_id'], PDO::PARAM_INT);
+                $query->bindValue(':day_week', $regularLesson['day_week'], PDO::PARAM_INT);
+                $query->bindValue(':time', $regularLesson['time'], PDO::PARAM_STR);
+                $query->execute();
+                return $this->pdo->lastInsertId();
+            } else {
+                $query = $this->pdo->prepare("UPDATE `client_regular_lessons` SET `time` = :time, teacher_id = :teacher_id WHERE `client_id` = :client_id AND `day_week` = :day_week");
+                $query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+                $query->bindValue(':teacher_id', $regularLesson['teacher_id'], PDO::PARAM_INT);
+                $query->bindValue(':day_week', $regularLesson['day_week'], PDO::PARAM_INT);
+                $query->bindValue(':time', $regularLesson['time'], PDO::PARAM_STR);
+                $query->execute();
                 return $query->rowCount();
             }
+
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
+    }
+
+    public function deleteRegularLessons($id)
+    {
+        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+
+        try {
+
+            $query = $this->pdo->prepare("DELETE FROM `client_regular_lessons` WHERE id = :id");
+            $query->bindValue(':id', $id, PDO::PARAM_INT);
+            $query->execute();
+
+            return $this->pdo->lastInsertId();
         } catch (PDOException $e) {
             return 'QUERY_FAILED';
         }

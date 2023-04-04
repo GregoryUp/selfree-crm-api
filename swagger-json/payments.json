@@ -12,8 +12,8 @@
     ],
     "tags": [
         {
-            "name": "clients",
-            "description": "Клиенты"
+            "name": "payments",
+            "description": "Платежи"
         }
     ],
     "schemes": [
@@ -21,32 +21,50 @@
         "http"
     ],
     "paths": {
-        "/clients/page.php": {
-            "get": {
-                "summary": "Получение списка клиентов пагинацией",
+        "/payments/create.php": {
+            "post": {
+                "summary": "Создать платёж на счёт клиента",
                 "tags": [
-                    "clients"
+                    "payments"
+                ],
+                "consumes": [
+                    "multipart/form-data"
                 ],
                 "parameters": [
                     {
-                        "name": "page",
-                        "in": "query",
-                        "description": "Страница",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "name": "client_id",
+                        "in": "formData",
+                        "description": "ID клиента",
+                        "required": true
+                    },
+                    {
+                        "name": "amount",
+                        "in": "formData",
+                        "description": "Сумма",
+                        "required": true
+                    },
+                    {
+                        "name": "operation_type_id",
+                        "in": "formData",
+                        "description": "Тип операции",
+                        "required": true
+                    },
+                    {
+                        "name": "comment",
+                        "in": "formData",
+                        "description": "Комментарий",
+                        "required": false
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Список клиентов",
+                        "description": "Платёж прошёл успешно",
                         "content": {
                             "application/json": {}
                         }
                     },
-                    "404": {
-                        "description": "NOT FOUND",
+                    "400": {
+                        "description": "Неверный запрос",
                         "content": {
                             "application/json": {}
                         }

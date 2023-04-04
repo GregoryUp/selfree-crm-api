@@ -45,8 +45,8 @@
                             "application/json": {}
                         }
                     },
-                    "404": {
-                        "description": "NOT FOUND",
+                    "400": {
+                        "description": "Ошибка в запросе",
                         "content": {
                             "application/json": {}
                         }
@@ -84,8 +84,14 @@
                             "application/json": {}
                         }
                     },
+                    "400": {
+                        "description": "Ошибка в запросе",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
                     "404": {
-                        "description": "NOT FOUND",
+                        "description": "Клиент не найден",
                         "content": {
                             "application/json": {}
                         }
@@ -255,6 +261,12 @@
                             "application/json": {}
                         }
                     },
+                    "404": {
+                        "description": "Клиент не найден",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
                     "500": {
                         "description": "Ошибка в сервере",
                         "content": {
@@ -309,6 +321,125 @@
                             "application/json": {}
                         }
                     },
+                    "404": {
+                        "description":"Клиент или абонемент не существует",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/setRegularLessons.php": {
+            "put": {
+                "summary":"Установить регулярный урок клиента",
+                "tags": [
+                    "clients"
+                ],
+                "parameters": [
+                    {
+                        "name": "client_id",
+                        "in": "query",
+                        "description": "ID клиента",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "regular_lesson",
+                        "in": "body",
+                        "description": "ID абонемента",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "teacher_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "day_week": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "time": {
+                                    "type": "string",
+                                    "example": "14:00"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Регулярный урок клиента установлен",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description":"Ошибка в запросе",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description":"Клиент или преподаватель не существует",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/deleteRegularLessons.php": {
+            "delete": {
+                "summary": "Удалить регулярный урок",
+                "tags": [
+                    "clients"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Регулярный урок клиента удалён",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Регулярного урока нет",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
                     "500": {
                         "description": "Ошибка в сервере",
                         "content": {
@@ -344,6 +475,12 @@
                     },
                     "400": {
                         "description": "Ошибка в запросе",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Клиент не найден",
                         "content": {
                             "application/json": {}
                         }

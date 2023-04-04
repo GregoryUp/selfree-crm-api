@@ -21,7 +21,7 @@
         "http"
     ],
     "paths": {
-        "/lessons/timetable.php": {
+        "/lessons/clientTimetable.php": {
             "get": {
                 "description": "Расписание студента",
                 "tags": [
@@ -41,7 +41,6 @@
                         "name": "date_start",
                         "in": "query",
                         "description": "Начало",
-                        "required": true,
                         "schema": {
                             "type": "integer"
                         }
@@ -50,7 +49,6 @@
                         "name": "date_end",
                         "in": "query",
                         "description": "Конец",
-                        "required": true,
                         "schema": {
                             "type": "integer"
                         }
@@ -162,9 +160,48 @@
                 }
             }
         },
+        "/lessons/createClientLessons.php": {
+            "post": {
+                "summary": "Create client lessons",
+                "tags": [
+                    "lessons"
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "parameters": [
+                    {
+                        "name": "client_id",
+                        "in": "formData",
+                        "description": "ID клиента",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Уроки созданы",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
         "/lessons/update.php": {
             "patch": {
-                "description": "Update teacher data",
+                "summary": "Update teacher data",
                 "tags": [
                     "lessons"
                 ],

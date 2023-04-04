@@ -144,9 +144,10 @@
                         "required": true
                     },
                     {
-                        "name": "skill",
+                        "name": "subject_ids",
                         "in": "formData",
-                        "description": "Специальность"
+                        "description": "Прдеметы",
+                        "required": true
                     },
                     {
                         "name": "phone",
@@ -214,13 +215,13 @@
                                     "type": "string",
                                     "example": "male"
                                 },
-                                "skill": {
+                                "subject_ids": {
                                     "type": "string",
-                                    "example": "2023-01-01"
+                                    "example": "1,2,3"
                                 },
                                 "phone": {
                                     "type": "string",
-                                    "example": "+7(777)777-77-77"
+                                    "example": "+7(999)999-00-00"
                                 },
                                 "email": {
                                     "type": "string",

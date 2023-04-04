@@ -19,13 +19,39 @@ class Payments
 
     public function create($payment)
     {
-        try {
-            $query = $this->pdo->prepare("INSERT INTO `{$this->table_name}` (client_id, date_create, operation_type_id, sum) VALUES(?, ?, ?, ?)");
 
-            $query->execute([$payment['client_id'], $payment['date_create'], $payment['operation_type_id'], $payment['sum']]);
+        $client_id = $payment['client_id'];
+        $date_create = date('Y-m-d H:i:s');
+        $operation_type_id = intval($payment['operation_type_id']);
+        $amount = doubleval($payment['amount']);
+        $comment = $payment['comment'];
+
+        try {
+
+            $this->pdo->beginTransaction();
+
+            $query = $this->pdo->prepare("INSERT INTO `{$this->table_name}` (date_create, operation_type_id, amount, comment) VALUES(?, ?, ?, ?)");
+            $query->execute([$date_create, $operation_type_id, $amount, $comment]);
+
+            $payment_id = $this->pdo->lastInsertId();
+
+            $query = $this->pdo->prepare("INSERT INTO `client_payments` SET client_id = ?, payment_id = ?, amount = ?");
+            $query->execute([$client_id, $payment_id, $amount]);
+
+            $query = $this->pdo->prepare("SELECT balance FROM `clients` WHERE id = ? ORDER BY id DESC LIMIT 1");
+            $query->execute([$client_id]);
+
+            $balance = $query->fetch(PDO::FETCH_ASSOC)['balance'];
+            $balance += $amount;
+
+            $query = $this->pdo->prepare("UPDATE `clients` SET balance = ? WHERE id = ?");
+            $query->execute([$balance, $client_id]);
+
+            $this->pdo->commit();
 
             return $this->pdo->lastInsertId();
         } catch (PDOException $e) {
+            $this->pdo->rollBack();
             return 'QUERY_FAILED';
         }
     }
@@ -72,10 +98,10 @@ class Payments
     public function delete($id)
     {
         if (!filter_var($id, FILTER_VALIDATE_INT))
-            return 'NO_ABONEMENT';
+            return 'NOT_FOUND';
 
         $id = intval($id);
-        if ($id <= 0) return 'NO_ABONEMENT';
+        if ($id <= 0) return 'NOT_FOUND';
 
         try {
             $query = $this->pdo->prepare("DELETE FROM `{$this->table_name}` WHERE id = ?");
