@@ -28,6 +28,10 @@ window.onload = function() {
       {
         url: "/swagger-json/payments.json",
         name: "Платежи"
+      },
+      {
+        url: "/swagger-json/settings.json",
+        name: "Настройки CRM"
       }
     ],
     dom_id: '#swagger-ui',

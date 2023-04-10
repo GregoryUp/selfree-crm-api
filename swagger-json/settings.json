@@ -1,0 +1,273 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "",
+        "version": "1.0.6",
+        "title": "Selfree CRM API"
+    },
+    "servers": [
+        {
+            "url": "https://api.selfree-school.ru/"
+        }
+    ],
+    "tags": [
+        {
+            "name": "settings",
+            "description": "Настройки"
+        }
+    ],
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "paths": {
+        "/settings/list.php" : {
+            "get": {
+                "summary": "Получить настройку",
+                "tags": [
+                    "settings"
+                ],
+                "parameters": [
+                    {
+                        "name": "object",
+                        "in": "query",
+                        "description": "Сущность настройки",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешно",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Сущность не найдена",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/settings/read.php" : {
+            "get": {
+                "summary": "Получить настройку",
+                "tags": [
+                    "settings"
+                ],
+                "parameters": [
+                    {
+                        "name": "object",
+                        "in": "query",
+                        "description": "Сущность настройки",
+                        "required": true
+                    },
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "ID настройки",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешно",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Сущность не найдена",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/settings/create.php": {
+            "post": {
+                "summary": "Добавить настройку",
+                "tags": [
+                    "settings"
+                ],
+                "parameters": [
+                    {
+                        "name": "object",
+                        "in": "query",
+                        "description": "Сущность настройки",
+                        "required": true
+                    },
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Настроки",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example": "Имя"
+                                },
+                                "slug": {
+                                    "type": "string",
+                                    "example": "slug"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Настройка создана",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/settings/update.php": {
+            "patch": {
+                "summary": "Обновление значения",
+                "tags": [
+                    "settings"
+                ],
+                "parameters": [
+                    {
+                        "name": "object",
+                        "in": "query",
+                        "description": "Сущность настройки",
+                        "required": true
+                    },
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "ID",
+                        "required": true
+                    },
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Данные для обновления настройки",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example": "Имя"
+                                },
+                                "slug": {
+                                    "type": "string",
+                                    "example": "slug"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Настройка обновлена",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/settings/delete.php": {
+            "delete": {
+                "summary": "Удаление настройки",
+                "tags": [
+                    "settings"
+                ],
+                "parameters": [
+                    {
+                        "name": "object",
+                        "in": "query",
+                        "description": "Сущность настройки",
+                        "required": true
+                    },
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "ID",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Настройка удалена успешно",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

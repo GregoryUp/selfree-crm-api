@@ -1,8 +1,8 @@
 <?php
-require_once '../vendor/autoload.php';
+require_once get_cfg_var('api_selfree_school_path') . '/vendor/autoload.php';
 
-require_once '../config/database.php';
-require_once '../objects/abonements.php';
+require_once get_cfg_var('api_selfree_school_path') . '/config/database.php';
+require_once get_cfg_var('api_selfree_school_path') . '/objects/abonements.php';
 
 $db = new DataBase();
 $db = $db->getConnection();

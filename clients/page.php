@@ -1,7 +1,7 @@
 <?php
 
-require_once '../config/database.php';
-require_once '../objects/clients.php';
+require_once get_cfg_var('api_selfree_school_path') . '/config/database.php';
+require_once get_cfg_var('api_selfree_school_path') . '/objects/clients.php';
 
 $page = $_GET['page'];
 
