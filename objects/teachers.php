@@ -19,17 +19,19 @@ class Teachers
 
     public function create($teacher)
     {
+        if (!in_array($teacher['gender'], ['male', 'female'])) return 'ERROR_PARAMETER_GENDER';
+        if (!is_array($teacher['subject_ids'])) return 'ERROR_PARAMETER_SUBJECT_IDS';
 
         $name = $teacher['name'];
         $gender = $teacher['gender'];
-        $skill = $teacher['skill'];
-        $email = $teacher['email'];
+        $subject_ids = implode(',', $teacher['subject_ids']);
         $phone = $teacher['phone'];
+        $email = $teacher['email'];
 
         try {
-            $query = $this->pdo->prepare("INSERT INTO `{$this->table_name}` (name, gender, skill, email, phone) VALUES(?, ?, ?, ?, ?)");
+            $query = $this->pdo->prepare("INSERT INTO `{$this->table_name}` (name, gender, subject_ids, email, phone) VALUES(?, ?, ?, ?, ?)");
 
-            $query->execute([$name, $gender, $skill, $email, $phone]);
+            $query->execute([$name, $gender, $subject_ids, $email, $phone]);
             return $this->pdo->lastInsertId();
         } catch (PDOException $e) {
             return 'QUERY_FAILED';

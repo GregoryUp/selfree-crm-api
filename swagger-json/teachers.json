@@ -147,7 +147,12 @@
                         "name": "subject_ids",
                         "in": "formData",
                         "description": "Прдеметы",
-                        "required": true
+                        "required": true,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "uniqueItems": true
                     },
                     {
                         "name": "phone",

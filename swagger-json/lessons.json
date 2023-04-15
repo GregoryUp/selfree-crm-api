@@ -23,7 +23,7 @@
     "paths": {
         "/lessons/clientTimetable.php": {
             "get": {
-                "description": "Расписание студента",
+                "summary": "Расписание студента",
                 "tags": [
                     "lessons"
                 ],
@@ -78,7 +78,7 @@
         },
         "/lessons/read.php": {
             "get": {
-                "description": "Информация об уроке",
+                "summary": "Информация об уроке",
                 "tags": [
                     "lessons"
                 ],
@@ -88,14 +88,18 @@
                         "in": "query",
                         "description": "lesson ID",
                         "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "type": "integer"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "Информация об уроке",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -117,7 +121,7 @@
         },
         "/lessons/create.php": {
             "post": {
-                "description": "Create teacher",
+                "summary": "Создать урок",
                 "tags": [
                     "lessons"
                 ],
@@ -126,33 +130,68 @@
                 ],
                 "parameters": [
                     {
-                        "name": "name",
+                        "name": "client_id",
                         "in": "formData",
-                        "description": "Teacher name",
+                        "description": "Client ID",
                         "required": true
                     },
                     {
-                        "name": "gender",
+                        "name": "teacher_id",
                         "in": "formData",
-                        "description": "Teacher gender",
+                        "description": "Teacher ID",
                         "required": true
+                    },
+                    {
+                        "name": "type",
+                        "in": "formData",
+                        "description": "Lesson type",
+                        "required": true
+                    },
+                    {
+                        "name": "date",
+                        "in": "formData",
+                        "description": "Date",
+                        "required": true
+                    },
+                    {
+                        "name": "time",
+                        "in": "formData",
+                        "description": "Time",
+                        "required": true
+                    },
+                    {
+                        "name": "status_id",
+                        "in": "formData",
+                        "description": "Status",
+                        "required": true
+                    },
+                    {
+                        "name": "subject_id",
+                        "in": "formData",
+                        "description": "Subject",
+                        "required": true
+                    },
+                    {
+                        "name": "comment",
+                        "in": "formData",
+                        "description": "Comment"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Teacher created",
+                        "description": "Урок создан",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "400": {
-                        "description": "Schema error",
+                        "description": "Ошибка в запросе",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка в сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -162,7 +201,7 @@
         },
         "/lessons/createClientLessons.php": {
             "post": {
-                "summary": "Create client lessons",
+                "summary": "Создать расписание студента",
                 "tags": [
                     "lessons"
                 ],
@@ -179,7 +218,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Уроки созданы",
+                        "description": "Расписание создано",
                         "content": {
                             "application/json": {}
                         }
@@ -201,7 +240,7 @@
         },
         "/lessons/update.php": {
             "patch": {
-                "summary": "Update teacher data",
+                "summary": "Обновить урок",
                 "tags": [
                     "lessons"
                 ],
@@ -223,25 +262,33 @@
                         "schema": {
                             "type": "object",
                             "properties": {
-                                "name": {
-                                    "type": "string",
-                                    "example": "Тест"
+                                "teacher_id": {
+                                    "type": "integer",
+                                    "example": "1"
                                 },
-                                "gender": {
+                                "type": {
                                     "type": "string",
-                                    "example": "male"
+                                    "example": "individual"
                                 },
-                                "skill": {
+                                "date": {
                                     "type": "string",
                                     "example": "2023-01-01"
                                 },
-                                "phone": {
+                                "time": {
                                     "type": "string",
-                                    "example": "+77777777777"
+                                    "example": "18:00"
                                 },
-                                "email": {
+                                "status_id": {
+                                    "type": "integer",
+                                    "example": "1"
+                                },
+                                "subject_id": {
+                                    "type": "integer",
+                                    "example": "1"
+                                },
+                                "comment": {
                                     "type": "string",
-                                    "example": "example@mail.com"
+                                    "example": ""
                                 }
                             }
                         }
@@ -249,19 +296,26 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Teacher updated",
+                        "description": "Lesson updated",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "400": {
-                        "description": "Schema error",
+                        "description": "Ошибка в запросе",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    
+                    "404": {
+                        "description": "Такого урока нет",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка в сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -271,7 +325,7 @@
         },
         "/lessons/delete.php": {
             "delete": {
-                "description": "Delete teacher",
+                "summary": "Удалить урок",
                 "tags": [
                     "lessons"
                 ],
@@ -279,22 +333,32 @@
                     {
                         "name": "id",
                         "in": "query",
-                        "description": "Teacher ID",
+                        "description": "Lesson ID",
                         "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "type": "integer"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Teacher has been deleted",
+                        "description": "Lesson has been deleted",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Не найдено",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка в сервере",
                         "content": {
                             "application/json": {}
                         }

@@ -15,7 +15,7 @@ header('Content-Type: application/json');
 
 if (empty($_POST)) {
     http_response_code(400);
-    exit(json_encode(['error' => true, 'message' => 'Data is empty']));
+    exit(json_encode(['error' => true, 'message' => 'EMPTY_DATA']));
 }
 
 $name = $_POST['name'];

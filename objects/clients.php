@@ -27,6 +27,9 @@ class Clients
         $phone = $client['phone'];
         $date_birth = $client['date_birth'];
 
+        $dateObj = DateTime::createFromFormat('Y-m-d', $date_birth);
+        if ($dateObj === false || $dateObj->format('Y-m-d') !== $date_birth) return 'ERROR_PARAMETER';
+
         try {
             $query = $this->pdo->prepare("INSERT INTO `{$this->table_name}` (surname, name, middlename, gender, date_birth, phone) VALUES(?, ?, ?, ?, ?, ?)");
 
