@@ -50,6 +50,8 @@ class Teachers
 
             $teacher = $query->fetch(PDO::FETCH_ASSOC);
 
+            $teacher['subject_ids'] = array_map('intval', explode(',', $teacher['subject_ids']));
+
             return $teacher;
         } catch (PDOException $e) {
             return 'QUERY_FAILED';
@@ -60,15 +62,18 @@ class Teachers
     {
         if (!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
 
+        if (!in_array($data['gender'], ['male', 'female'])) return 'ERROR_PARAMETER_GENDER';
+        if (!is_array($data['subject_ids'])) return 'ERROR_PARAMETER_SUBJECT_IDS';
+
         $name = $data['name'];
         $gender = $data['gender'];
-        $skill = $data['skill'];
-        $email = $data['email'];
+        $subject_ids = implode(',', $data['subject_ids']);
         $phone = $data['phone'];
+        $email = $data['email'];
 
         try {
-            $query = $this->pdo->prepare("UPDATE `{$this->table_name}` SET name = ?, gender = ?, skill = ?, email = ?, phone = ? WHERE id = ?");
-            $query->execute([$name, $gender, $skill, $email, $phone, $id]);
+            $query = $this->pdo->prepare("UPDATE `{$this->table_name}` SET name = ?, gender = ?, subject_ids = ?, email = ?, phone = ? WHERE id = ?");
+            $query->execute([$name, $gender, $subject_ids, $email, $phone, $id]);
             return $query->rowCount();
         } catch (PDOException $e) {
             return "QUERY_FAILED";

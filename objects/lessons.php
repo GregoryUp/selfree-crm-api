@@ -27,6 +27,9 @@ class Lessons
         $client_getRegularLessons_result = $client->getRegularLessons($client_id);
         $client_getAbonement_result = $client->getAbonements($client_id);
 
+        if(empty($client_getRegularLessons_result)) return 'NOT_SET_REGULAR_LESSONS';
+        if(empty($client_getAbonement_result)) return 'NOT_SET_ABONEMENT';
+
         $lessonsDays = [];
 
         foreach ($client_getRegularLessons_result as $item) {
@@ -137,7 +140,7 @@ class Lessons
 
         try {
 
-            $query = $this->pdo->prepare("SELECT * FROM `{$this->table_name}` WHERE client_id = :client_id AND date >= :date_start AND date <= :date_end");
+            $query = $this->pdo->prepare("SELECT * FROM `{$this->table_name}` WHERE client_id = :client_id AND date >= :date_start AND date <= :date_end ORDER BY date");
             $query->bindParam(':client_id', $client_id, PDO::PARAM_INT);
             $query->bindParam(':date_start', $date_start, PDO::PARAM_STR);
             $query->bindParam(':date_end', $date_end, PDO::PARAM_STR);

@@ -73,11 +73,12 @@ class Abonements
 
         $name = $data['name'];
         $tariff_id = $data['tariff_id'];
+        $duration = $data['duration'];
         $price = $data['price'];
 
         try {
-            $query = $this->pdo->prepare("UPDATE `{$this->table_name}` SET name = ?, tariff_id = ?, price = ? WHERE id = ?");
-            $query->execute([$name, $tariff_id, $price, $id]);
+            $query = $this->pdo->prepare("UPDATE `{$this->table_name}` SET name = ?, tariff_id = ?, duration = ?, price = ? WHERE id = ?");
+            $query->execute([$name, $tariff_id, $duration, $price, $id]);
             return $query->rowCount();
         } catch (PDOException $e) {
             return "QUERY_FAILED";

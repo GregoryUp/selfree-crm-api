@@ -45,12 +45,44 @@ class Clients
         if (!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
 
         try {
-            $query = $this->pdo->prepare("SELECT * FROM `{$this->table_name}` WHERE id = :id ORDER BY id DESC LIMIT 1");
-            $query->execute(['id' => $id]);
+            $client_query = $this->pdo->prepare("SELECT * FROM `{$this->table_name}` WHERE id = :id ORDER BY id DESC LIMIT 1");
+            $client_query->execute(['id' => $id]);
 
-            if ($query->rowCount() == 0) return 'NOT_FOUND';
+            if ($client_query->rowCount() == 0) return 'NOT_FOUND';
+            
+            $client = $client_query->fetch(PDO::FETCH_ASSOC);
 
-            $client = $query->fetch(PDO::FETCH_ASSOC);
+            // Подтягиваем тариф клиента
+            $client_tariff_query = $this->pdo->prepare("SELECT ct.tariff_id, t.name, ct.subject_id, s.name AS 'subject_name'
+                                                        FROM `clients_tariffs` AS ct
+                                                        LEFT JOIN `tariffs` AS t ON ct.tariff_id = t.id
+                                                        LEFT JOIN `setting_subjects` AS s ON ct.subject_id = s.id
+                                                        WHERE ct.client_id = :client_id");
+            $client_tariff_query->execute(['client_id' => $id]);
+            $client_tariffs = $client_tariff_query->fetchAll(PDO::FETCH_ASSOC);
+
+            // Подтягиваем абонемент клиента
+            $client_abonement_query = $this->pdo->prepare("SELECT ca.abonement_id, a.name, ca.subject_id, s.name AS 'subject_name', ca.date_start, ca.date_end
+                                                        FROM `clients_abonements` AS ca
+                                                        LEFT JOIN `abonements` AS a ON ca.abonement_id = a.id
+                                                        LEFT JOIN `setting_subjects` AS s ON ca.subject_id = s.id
+                                                        WHERE ca.client_id = :client_id");
+            $client_abonement_query->execute(['client_id' => $id]);
+            $client_abonements = $client_abonement_query->fetchAll(PDO::FETCH_ASSOC);
+
+            // Подтягиваем регулярный урок клиента
+            $client_regularLessons_query = $this->pdo->prepare("SELECT crl.id, crl.teacher_id, t.name, crl.day_week, crl.time
+                                                        FROM `client_regular_lessons` AS crl
+                                                        LEFT JOIN `teachers` AS t ON crl.teacher_id = t.id
+                                                        WHERE crl.client_id = :client_id");
+            $client_regularLessons_query->execute(['client_id' => $id]);
+            $client_regularLessons = $client_regularLessons_query->fetchAll(PDO::FETCH_ASSOC);
+
+            
+
+            $client['tariffs'] = $client_tariffs;
+            $client['abonements'] = $client_abonements;
+            $client['regular_lessons'] = $client_regularLessons;
 
             return $client;
         } catch (PDOException $e) {
@@ -85,15 +117,6 @@ class Clients
         try {
             $query = $this->pdo->prepare("DELETE FROM `{$this->table_name}` WHERE id = ?");
             $query->execute([$client_id]);
-
-            $query1 = $this->pdo->prepare("DELETE FROM `clients_abonements` WHERE client_id = ?");
-            $query1->execute([$client_id]);
-
-            $query1 = $this->pdo->prepare("DELETE FROM `clients_abonements` WHERE client_id = ?");
-            $query1->execute([$client_id]);
-
-            $query1 = $this->pdo->prepare("DELETE FROM `client_regular_lessons` WHERE client_id = ?");
-            $query1->execute([$client_id]);
 
             return $query->rowCount();
         } catch (PDOException $e) {
@@ -134,43 +157,92 @@ class Clients
         }
     }
 
-    public function setAbonement($client_id, $abonement_id)
+    public function setTariff($client_id, $tariff_id, $subject_id)
     {
-        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
-        if (!filter_var($abonement_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_CLIENT_ID';
+        if (!filter_var($tariff_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_TARIFF_ID';
+        if (!filter_var($subject_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_SUBJECT_ID';
 
         try {
 
-            $client_query = $this->pdo->prepare("SELECT id FROM `{$this->table_name}` WHERE id = :id");
-            $client_query->bindValue(':id', $client_id, PDO::PARAM_INT);
-            $client_query->execute();
-            if ($client_query->rowCount() == 0) return 'NOT_FOUND';
+            $select_tariff_query = $this->pdo->prepare("SELECT * FROM `clients_tariffs` WHERE client_id = :client_id AND tariff_id = :tariff_id AND subject_id = :subject_id");
+            $select_tariff_query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+            $select_tariff_query->bindValue(':tariff_id', $tariff_id, PDO::PARAM_INT);
+            $select_tariff_query->bindValue(':subject_id', $subject_id, PDO::PARAM_INT);
+            $select_tariff_query->execute();
 
-            $client_abonement_query = $this->pdo->prepare("SELECT id FROM `clients_abonements` WHERE client_id = :client_id AND abonement_id = :abonement_id");
+            if ($select_tariff_query->rowCount() > 0) return $select_tariff_query->fetch(PDO::FETCH_ASSOC)['id'];
+
+            $query = $this->pdo->prepare("INSERT INTO `clients_tariffs` (client_id, tariff_id, subject_id) VALUES (:client_id, :tariff_id, :subject_id)");
+            $query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+            $query->bindValue(':tariff_id', $tariff_id, PDO::PARAM_INT);
+            $query->bindValue(':subject_id', $subject_id, PDO::PARAM_INT);
+            $query->execute();
+
+            return $this->pdo->lastInsertId();
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
+    }
+
+    public function deleteTariff($client_id, $tariff_id, $subject_id)
+    {
+        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_CLIENT_ID';
+        if (!filter_var($tariff_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_TARIFF_ID';
+        if (!filter_var($subject_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_SUBJECT_ID';
+
+        try {
+
+            $query = $this->pdo->prepare("DELETE FROM `clients_tariffs` WHERE client_id = :client_id AND tariff_id = :tariff_id AND subject_id = :subject_id");
+
+            $query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+            $query->bindValue(':tariff_id', $tariff_id, PDO::PARAM_INT);
+            $query->bindValue(':subject_id', $subject_id, PDO::PARAM_INT);
+            $query->execute();
+
+            return $query->rowCount();
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
+    }
+
+    public function setAbonement($client_id, $abonement_id, $subject_id)
+    {
+        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_CLIENT_ID';
+        if (!filter_var($abonement_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_ABONEMENT_ID';
+        if (!filter_var($subject_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_SUBJECT_ID';
+
+        try {
+            $client_abonement_query = $this->pdo->prepare("SELECT id FROM `clients_abonements` WHERE client_id = :client_id AND abonement_id = :abonement_id AND subject_id = :subject_id");
             $client_abonement_query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
             $client_abonement_query->bindValue(':abonement_id', $abonement_id, PDO::PARAM_INT);
+            $client_abonement_query->bindValue(':subject_id', $subject_id, PDO::PARAM_INT);
             $client_abonement_query->execute();
+
+            if ($client_abonement_query->rowCount() > 0) {
+                return $client_abonement_query->rowCount();
+            }
 
             $abonement_query = $this->pdo->prepare("SELECT * FROM `abonements` WHERE id = :id ORDER BY id DESC");
             $abonement_query->bindValue(':id', $abonement_id, PDO::PARAM_INT);
             $abonement_query->execute();
-            if ($abonement_query->rowCount() == 0) return 'NOT_FOUND';
+
+            if ($abonement_query->rowCount() == 0) return 'NOT_FOUND_ABONEMENT';
 
             $abonement = $abonement_query->fetch(PDO::FETCH_ASSOC);
+
             $date_start = date('Y-m-d');
             $date_end = date('Y-m-d', strtotime($date_start . ' +' . $abonement['duration'] . ' days'));
 
-            if ($client_abonement_query->rowCount() > 0) {
-                return $client_abonement_query->rowCount();
-            } else {
-                $query = $this->pdo->prepare("INSERT INTO `clients_abonements` SET client_id = :client_id, abonement_id = :abonement_id, date_start = :date_start, date_end = :date_end");
-                $query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
-                $query->bindValue(':abonement_id', $abonement_id, PDO::PARAM_INT);
-                $query->bindValue(':date_start', $date_start, PDO::PARAM_STR);
-                $query->bindValue(':date_end', $date_end, PDO::PARAM_STR);
-                $query->execute();
-                return $this->pdo->lastInsertId();
-            }
+            $query = $this->pdo->prepare("INSERT INTO `clients_abonements` SET client_id = :client_id, abonement_id = :abonement_id, subject_id = :subject_id, date_start = :date_start, date_end = :date_end");
+            $query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+            $query->bindValue(':abonement_id', $abonement_id, PDO::PARAM_INT);
+            $query->bindValue(':subject_id', $subject_id, PDO::PARAM_INT);
+            $query->bindValue(':date_start', $date_start, PDO::PARAM_STR);
+            $query->bindValue(':date_end', $date_end, PDO::PARAM_STR);
+            $query->execute();
+
+            return $this->pdo->lastInsertId();
         } catch (PDOException $e) {
             return 'QUERY_FAILED';
         }
@@ -194,24 +266,27 @@ class Clients
         }
     }
 
-    public function deleteAbonement($client_id)
+    public function deleteAbonement($client_id, $subject_id)
     {
-        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_CLIENT_ID';
+        if (!filter_var($subject_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_SUBJECT_ID';
 
         try {
 
-            $query = $this->pdo->prepare("DELETE FROM `abonements` WHERE client_id = :client_id");
+            $query = $this->pdo->prepare("DELETE FROM `clients_abonements` WHERE client_id = :client_id AND subject_id = :subject_id");
             $query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+            $query->bindValue(':subject_id', $subject_id, PDO::PARAM_INT);
             $query->execute();
 
-            return $this->pdo->lastInsertId();
+            return $query->rowCount();
         } catch (PDOException $e) {
             return 'QUERY_FAILED';
         }
     }
 
-    public function getRegularLessons($client_id) {
-        if(!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
+    public function getRegularLessons($client_id)
+    {
+        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
 
         try {
 
@@ -220,21 +295,18 @@ class Clients
             $query->execute();
 
             return $query->fetchAll(PDO::FETCH_ASSOC);
-
         } catch (PDOException $e) {
             return 'QUERY_FAILED';
         }
-
     }
 
     public function setRegularLessons($client_id, $regularLesson)
     {
-        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
-
-        if (!($regularLesson['day_week'] <= 7 && $regularLesson['day_week'] >= 1)) return 'ERROR_PARAMETER';
+        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_CLIENT_ID';
+        if (!($regularLesson['day_week'] <= 7 && $regularLesson['day_week'] >= 1)) return 'ERROR_PARAMETER_DAY_WEEK';
 
         $timestamp = strtotime($regularLesson['time']);
-        if (!($timestamp !== false && date('H:i', $timestamp) === $regularLesson['time'])) return 'ERROR_PARAMETER';
+        if (!($timestamp !== false && date('H:i', $timestamp) === $regularLesson['time'])) return 'ERROR_PARAMETER_TIME';
 
         try {
 
@@ -260,7 +332,6 @@ class Clients
                 $query->execute();
                 return $query->rowCount();
             }
-
         } catch (PDOException $e) {
             return 'QUERY_FAILED';
         }

@@ -24,7 +24,7 @@ $lead_fields['phone'] = phone_format($lead_fields['phone']);
 $phoneNumberObject = $phoneNumberUtil->parse($lead_fields['phone'], 'RU');
 if (!($phoneNumberUtil->isValidNumberForRegion($phoneNumberObject, 'RU'))) {
     http_response_code(400);
-    exit(json_encode(['error' => true, 'message' => 'Phone is not valid']));
+    exit(json_encode(['error' => true, 'message' => 'INVALID_PHONE']));
 }
 
 $sourceList = new Settings($db, 'lead_source');
@@ -34,7 +34,7 @@ $sources = array_column($rows, 'slug');
 
 if (!in_array($lead_fields['source'], $sources)) {
     http_response_code(400);
-    exit(json_encode(['error' => true, 'message' => 'Source does not exist']));
+    exit(json_encode(['error' => true, 'message' => 'ERROR_PARAMETER_SOURCE_ID']));
 }
 
 $lead = new Leads($db);

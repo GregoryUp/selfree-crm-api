@@ -32,7 +32,7 @@ $tariff_ids = array_column($tariff_getList_result, 'id');
 
 if(!in_array($tariff_id, $tariff_ids)) {
     http_response_code(400);
-    exit(json_encode(['error' => true, 'message' => "NOT_FOUND_TARIFF"]));
+    exit(json_encode(['error' => true, 'message' => "ERROR_PARAMETER_TARIFF_ID"]));
 }
 
 $abonement = new Abonements($db);

@@ -276,6 +276,68 @@
                 }
             }
         },
+        "/clients/setTariff.php": {
+            "put": {
+                "summary":"Установить тариф",
+                "tags": [
+                    "clients"
+                ],
+                "parameters": [
+                    {
+                        "name": "client_id",
+                        "in": "query",
+                        "description": "ID клиента",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "tariff_id",
+                        "in": "body",
+                        "description": "Tariff ID",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "tariff_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "subject_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Тариф клиента обновлен",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description":"Ошибка в запросе",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description":"Клиент не найден",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
         "/clients/setAbonement.php": {
             "put": {
                 "summary":"Установить абонемент",
@@ -288,12 +350,10 @@
                         "in": "query",
                         "description": "ID клиента",
                         "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "type": "integer"
                     },
                     {
-                        "name": "abonement_id",
+                        "name": "abonement",
                         "in": "body",
                         "description": "ID абонемента",
                         "required": true,
@@ -303,6 +363,10 @@
                                 "abonement_id": {
                                     "type": "integer",
                                     "example": 1
+                                },
+                                "subject_id": {
+                                    "type": "integer",
+                                    "example": 1
                                 }
                             }
                         }
@@ -310,19 +374,13 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Абонемент обновлен",
+                        "description": "Абонемент сохранён",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "400": {
                         "description":"Ошибка в запросе",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "404": {
-                        "description":"Клиент или абонемент не существует",
                         "content": {
                             "application/json": {}
                         }
@@ -364,6 +422,10 @@
                                     "type": "integer",
                                     "example": 1
                                 },
+                                "subject_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
                                 "day_week": {
                                     "type": "integer",
                                     "example": 1
@@ -371,6 +433,14 @@
                                 "time": {
                                     "type": "string",
                                     "example": "14:00"
+                                },
+                                "date_start": {
+                                    "type": "string",
+                                    "example": "2023-01-01"
+                                },
+                                "date_end": {
+                                    "type": "string",
+                                    "example": "2023-01-01"
                                 }
                             }
                         }
@@ -390,7 +460,102 @@
                         }
                     },
                     "404": {
-                        "description":"Клиент или преподаватель не существует",
+                        "description":"Клиент не найден",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/deleteTariff.php": {
+            "delete": {
+                "summary": "Удалить тариф",
+                "tags": [
+                    "clients"
+                ],
+                "parameters": [
+                    {
+                        "name": "client_id",
+                        "in": "query",
+                        "description": "Клиент",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "tariff_id",
+                        "in": "query",
+                        "description": "Тариф",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "subject_id",
+                        "in": "query",
+                        "description": "Предмет",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Тариф клиента удалён",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка в сервере",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/deleteAbonement.php": {
+            "delete": {
+                "summary": "Удалить абонемент",
+                "tags": [
+                    "clients"
+                ],
+                "parameters": [
+                    {
+                        "name": "client_id",
+                        "in": "query",
+                        "description": "Клиент",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "subject_id",
+                        "in": "query",
+                        "description": "Предмет",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Абонемент отвязан",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе",
                         "content": {
                             "application/json": {}
                         }

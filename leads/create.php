@@ -3,7 +3,7 @@ require_once get_cfg_var('api_selfree_school_path') . '/vendor/autoload.php';
 
 require_once get_cfg_var('api_selfree_school_path') . '/config/database.php';
 require_once get_cfg_var('api_selfree_school_path') . '/objects/leads.php';
-require_once get_cfg_var('api_selfree_school_path') . '/objects/lead_source_list.php';
+require_once get_cfg_var('api_selfree_school_path') . '/objects/settings.php';
 require_once get_cfg_var('api_selfree_school_path') . '/functions/formatPhone.php';
 
 $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
@@ -29,21 +29,21 @@ $phoneNumberObject = $phoneNumberUtil->parse($phone, 'RU');
 
 if (!($phoneNumberUtil->isValidNumberForRegion($phoneNumberObject, 'RU'))) {
     http_response_code(400);
-    exit(json_encode(['error' => true, 'message' => 'Phone is not valid']));
+    exit(json_encode(['error' => true, 'message' => 'INVALID_PHONE']));
 }
 
 if (!filter_var($status, FILTER_VALIDATE_INT)) {
     http_response_code(400);
-    exit(json_encode(['error' => true, 'message' => 'Status is not valid']));
+    exit(json_encode(['error' => true, 'message' => 'ERROR_PARAMETER_STATUS']));
 }
 
-$sourceList = new SourceList($db);
-$rows = $sourceList->getList();
-$sources = array_column($rows, 'slug');
+$setting = new Settings($db, 'lead_source');
+$sourceList = $setting->getList();
+$sources = array_column($sourceList, 'slug');
 
 if (!in_array($source, $sources)) {
     http_response_code(400);
-    exit(json_encode(['error' => true, 'message' => 'Source does not exist']));
+    exit(json_encode(['error' => true, 'message' => 'ERROR_PARAMETER_SOURCE_ID']));
 }
 
 $lead = new Leads($db);

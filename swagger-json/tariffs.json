@@ -27,7 +27,7 @@
     "paths": {
         "/tariffs/read.php": {
             "get": {
-                "description": "View tariff",
+                "summary": "Получить тариф",
                 "tags": [
                     "tariffs"
                 ],
@@ -37,26 +37,30 @@
                         "in": "query",
                         "description": "Tariff ID",
                         "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "type": "integer"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Tariff",
+                        "description": "Тариф",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Не найдено",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка на сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -66,25 +70,19 @@
         },
         "/tariffs/list.php": {
             "get": {
-                "description": "Tariff list",
+                "summary": "Список тарифов",
                 "tags": [
                     "tariffs"
                 ],
                 "responses": {
                     "200": {
-                        "description": "Tariff list",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
+                        "description": "Список тарифов",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка на сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -94,7 +92,7 @@
         },
         "/tariffs/create.php": {
             "post": {
-                "description": "Create tariff",
+                "summary": "Создать тариф",
                 "tags": [
                     "tariffs"
                 ],
@@ -105,37 +103,37 @@
                     {
                         "name": "name",
                         "in": "formData",
-                        "description": "Tariff name",
+                        "description": "Название тарифа",
                         "required": true
                     },
                     {
                         "name": "duration",
                         "in": "formData",
-                        "description": "Lesson duration",
+                        "description": "Длительность урока (мин)",
                         "required": true
                     },
                     {
                         "name": "price",
                         "in": "formData",
-                        "description": "Tariff price",
+                        "description": "Цена тарифа за урок",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Tariff created",
+                        "description": "Тариф создан",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "400": {
-                        "description": "Schema error",
+                        "description": "Ошибка в запросе",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка на сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -145,7 +143,7 @@
         },
         "/tariffs/update.php": {
             "patch": {
-                "description": "Update tariff data",
+                "summary": "Обновить тариф",
                 "tags": [
                     "tariffs"
                 ],
@@ -155,14 +153,12 @@
                         "in": "query",
                         "description": "ID",
                         "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "type": "integer"
                     },
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "Tariff data to update",
+                        "description": "Данные",
                         "required": true,
                         "schema": {
                             "type": "object",
@@ -185,19 +181,25 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Tariff updated",
+                        "description": "Тариф обновлён",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "400": {
-                        "description": "Schema error",
+                        "description": "Ошибка в запросе",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Не найдено",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка на сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -207,7 +209,7 @@
         },
         "/tariffs/delete.php": {
             "delete": {
-                "description": "Delete tariff",
+                "summary": "Удалить тариф",
                 "tags": [
                     "tariffs"
                 ],
@@ -224,13 +226,19 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Tariff has been deleted",
+                        "description": "Тариф был удалён",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Ошибка в запросе",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка на сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -240,7 +248,7 @@
         },
         "/abonements/read.php": {
             "get": {
-                "description": "View abonement",
+                "summary": "Абонемент",
                 "tags": [
                     "abonements"
                 ],
@@ -250,26 +258,30 @@
                         "in": "query",
                         "description": "Abonement ID",
                         "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "type": "integer"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Abonement",
+                        "description": "Абонемент",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Не найдено",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка на сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -279,19 +291,13 @@
         },
         "/abonements/list.php": {
             "get": {
-                "description": "Abonement list",
+                "summary": "Список абонементов",
                 "tags": [
                     "abonements"
                 ],
                 "responses": {
                     "200": {
-                        "description": "Abonement list",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
+                        "description": "Список абонементов",
                         "content": {
                             "application/json": {}
                         }
@@ -307,7 +313,7 @@
         },
         "/abonements/create.php": {
             "post": {
-                "description": "Create abonement",
+                "summary": "Создать абонемент",
                 "tags": [
                     "abonements"
                 ],
@@ -318,7 +324,7 @@
                     {
                         "name": "name",
                         "in": "formData",
-                        "description": "Abonement name",
+                        "description": "Название абонемента",
                         "required": true
                     },
                     {
@@ -328,39 +334,33 @@
                         "required": true
                     },
                     {
-                        "name": "subject_id",
-                        "in": "formData",
-                        "description": "ID предмета",
-                        "required": true
-                    },
-                    {
                         "name": "duration",
                         "in": "formData",
-                        "description": "Abonement duration (days)",
+                        "description": "Длительность абонемента в днях",
                         "required": true
                     },
                     {
                         "name": "price",
                         "in": "formData",
-                        "description": "Abonement price",
+                        "description": "Цена",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Tariff created",
+                        "description": "Абонемент создан",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "400": {
-                        "description": "Schema error",
+                        "description": "Ошибка в запросе",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка на сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -370,7 +370,7 @@
         },
         "/abonements/update.php": {
             "patch": {
-                "description": "Update abonement data",
+                "summary": "Обновить абонемент",
                 "tags": [
                     "abonements"
                 ],
@@ -380,14 +380,12 @@
                         "in": "query",
                         "description": "ID",
                         "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "type": "integer"
                     },
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "Abonement data to update",
+                        "description": "Данные",
                         "required": true,
                         "schema": {
                             "type": "object",
@@ -397,10 +395,6 @@
                                     "example": "Имя абонемента"
                                 },
                                 "tariff_id": {
-                                    "type": "integer",
-                                    "example": "1"
-                                },
-                                "abonement_id": {
                                     "type": "integer",
                                     "example": "1"
                                 },
@@ -418,19 +412,25 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Abonement updated",
+                        "description": "Абонемент обновлён",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "400": {
-                        "description": "Schema error",
+                        "description": "Ошибка в запросе",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Не найдено",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка на сервере",
                         "content": {
                             "application/json": {}
                         }
@@ -440,7 +440,7 @@
         },
         "/abonements/delete.php": {
             "delete": {
-                "description": "Delete abonement",
+                "summary": "Удалить абонемент",
                 "tags": [
                     "abonements"
                 ],
@@ -450,20 +450,24 @@
                         "in": "query",
                         "description": "Tariff ID",
                         "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "type": "integer"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Abonement has been deleted",
+                        "description": "Абонемент был удалён",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе",
                         "content": {
                             "application/json": {}
                         }
                     },
                     "500": {
-                        "description": "Server Error",
+                        "description": "Ошибка на сервере",
                         "content": {
                             "application/json": {}
                         }
