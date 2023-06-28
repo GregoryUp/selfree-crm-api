@@ -71,7 +71,7 @@ class Clients
             $client_abonements = $client_abonement_query->fetchAll(PDO::FETCH_ASSOC);
 
             // Подтягиваем регулярный урок клиента
-            $client_regularLessons_query = $this->pdo->prepare("SELECT crl.id, crl.teacher_id, t.name, crl.day_week, crl.time
+            $client_regularLessons_query = $this->pdo->prepare("SELECT crl.id, crl.teacher_id, crl.subject_id, t.name, crl.day_week, crl.time, crl.date_start, crl.date_end
                                                         FROM `client_regular_lessons` AS crl
                                                         LEFT JOIN `teachers` AS t ON crl.teacher_id = t.id
                                                         WHERE crl.client_id = :client_id");
@@ -303,36 +303,50 @@ class Clients
     public function setRegularLessons($client_id, $regularLesson)
     {
         if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_CLIENT_ID';
+        if (!filter_var($regularLesson['subject_id'], FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_SUBJECT_ID';
         if (!($regularLesson['day_week'] <= 7 && $regularLesson['day_week'] >= 1)) return 'ERROR_PARAMETER_DAY_WEEK';
 
         $timestamp = strtotime($regularLesson['time']);
         if (!($timestamp !== false && date('H:i', $timestamp) === $regularLesson['time'])) return 'ERROR_PARAMETER_TIME';
 
+        $date_start = strtotime($regularLesson['date_start']) !== false ? date('Y-m-d', strtotime($regularLesson['date_start'])) : date('Y-m-d');
+        $date_end = strtotime($regularLesson['date_end']) !== false ? date('Y-m-d', strtotime($regularLesson['date_end'])) : date('Y-m-d');
+
+        $subject_id = intval($regularLesson['subject_id']);
+
         try {
 
-            $query = $this->pdo->prepare("SELECT * FROM `client_regular_lessons` WHERE client_id = :client_id AND day_week = :day_week");
+            $query = $this->pdo->prepare("SELECT * FROM `client_regular_lessons` WHERE client_id = :client_id AND subject_id = :subject_id AND day_week = :day_week");
             $query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+            $query->bindValue(':subject_id', $subject_id, PDO::PARAM_INT);
             $query->bindValue(':day_week', $regularLesson['day_week'], PDO::PARAM_INT);
             $query->execute();
 
             if (empty($query->rowCount())) {
-                $query = $this->pdo->prepare("INSERT INTO `client_regular_lessons` (client_id, teacher_id, day_week, time) VALUES (:client_id, :teacher_id, :day_week, :time)");
+                $query = $this->pdo->prepare("INSERT INTO `client_regular_lessons` (client_id, teacher_id, subject_id, day_week, time, date_start, date_end) VALUES (:client_id, :teacher_id, :subject_id, :day_week, :time, :date_start, :date_end)");
                 $query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
                 $query->bindValue(':teacher_id', $regularLesson['teacher_id'], PDO::PARAM_INT);
+                $query->bindValue(':subject_id', $subject_id, PDO::PARAM_INT);
                 $query->bindValue(':day_week', $regularLesson['day_week'], PDO::PARAM_INT);
                 $query->bindValue(':time', $regularLesson['time'], PDO::PARAM_STR);
+                $query->bindValue(':date_start', $date_start, PDO::PARAM_STR);
+                $query->bindValue(':date_end', $date_end, PDO::PARAM_STR);
                 $query->execute();
                 return $this->pdo->lastInsertId();
             } else {
-                $query = $this->pdo->prepare("UPDATE `client_regular_lessons` SET `time` = :time, teacher_id = :teacher_id WHERE `client_id` = :client_id AND `day_week` = :day_week");
+                $query = $this->pdo->prepare("UPDATE `client_regular_lessons` SET teacher_id = :teacher_id, time = :time, date_start = :date_start, date_end = :date_end WHERE client_id = :client_id AND day_week = :day_week AND subject_id = :subject_id");
                 $query->bindValue(':client_id', $client_id, PDO::PARAM_INT);
                 $query->bindValue(':teacher_id', $regularLesson['teacher_id'], PDO::PARAM_INT);
+                $query->bindValue(':subject_id', $subject_id, PDO::PARAM_INT);
                 $query->bindValue(':day_week', $regularLesson['day_week'], PDO::PARAM_INT);
                 $query->bindValue(':time', $regularLesson['time'], PDO::PARAM_STR);
+                $query->bindValue(':date_start', $date_start, PDO::PARAM_STR);
+                $query->bindValue(':date_end', $date_end, PDO::PARAM_STR);
                 $query->execute();
                 return $query->rowCount();
             }
         } catch (PDOException $e) {
+            print_r($e->getMessage());
             return 'QUERY_FAILED';
         }
     }
@@ -342,13 +356,30 @@ class Clients
         if (!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
 
         try {
+            $this->pdo->beginTransaction();
+
+            $query = $this->pdo->prepare("SELECT * FROM `client_regular_lessons` WHERE id = :id");
+            $query->bindValue(':id', $id, PDO::PARAM_INT);
+            $query->execute();
+
+            $regularLesson = $query->fetch(PDO::FETCH_ASSOC);
+
+            $query = $this->pdo->prepare("DELETE FROM `lessons` WHERE client_id = :client_id AND date BETWEEN :date_start AND :date_end AND subject_id = :subject_id AND WEEKDAY(date) + 1 = :day_week AND status_id IN(1,3,5)");
+            $query->bindValue(':client_id', $regularLesson['client_id'], PDO::PARAM_INT);
+            $query->bindValue(':date_start', $regularLesson['date_start'], PDO::PARAM_STR);
+            $query->bindValue(':date_end', $regularLesson['date_end'], PDO::PARAM_STR);
+            $query->bindValue(':subject_id', $regularLesson['subject_id'], PDO::PARAM_INT);
+            $query->bindValue(':day_week', $regularLesson['day_week'], PDO::PARAM_INT);
+            $query->execute();
 
             $query = $this->pdo->prepare("DELETE FROM `client_regular_lessons` WHERE id = :id");
             $query->bindValue(':id', $id, PDO::PARAM_INT);
             $query->execute();
 
-            return $this->pdo->lastInsertId();
+            $this->pdo->commit();
+            return $query->rowCount();
         } catch (PDOException $e) {
+            $this->pdo->rollBack();
             return 'QUERY_FAILED';
         }
     }

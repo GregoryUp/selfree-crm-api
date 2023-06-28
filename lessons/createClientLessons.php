@@ -28,11 +28,6 @@ if(gettype($lesson_createClientTimetable_result) == 'string') {
         http_response_code(403);
         exit(json_encode(['error' => true, 'message' => "{$lesson_createClientTimetable_result}"]));
     }
-
-    if($lesson_createClientTimetable_result == 'NOT_SET_ABONEMENT') {
-        http_response_code(403);
-        exit(json_encode(['error' => true, 'message' => "{$lesson_createClientTimetable_result}"]));
-    }
 }
 
-echo json_encode($lesson_createClientTimetable_result);
+echo json_encode(['success' => true]);

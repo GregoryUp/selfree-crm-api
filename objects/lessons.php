@@ -19,96 +19,71 @@ class Lessons
 
     public function createClientTimetable($client_id)
     {
-
-        $client = new Clients($this->pdo);
+        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_CLIENT_ID';
 
         $regularLessons = [];
 
+        $client = new Clients($this->pdo);
         $client_getRegularLessons_result = $client->getRegularLessons($client_id);
-        $client_getAbonement_result = $client->getAbonements($client_id);
 
-        if(empty($client_getRegularLessons_result)) return 'NOT_SET_REGULAR_LESSONS';
-        if(empty($client_getAbonement_result)) return 'NOT_SET_ABONEMENT';
-
-        $lessonsDays = [];
+        if (empty($client_getRegularLessons_result) && !is_array($client_getRegularLessons_result)) return 'NOT_SET_REGULAR_LESSONS';
 
         foreach ($client_getRegularLessons_result as $item) {
-            $lessonsDays[] = [
-                'day'   => $item['day_week'],
-                'time'  => $item['time'],
-                'teacher_id' => $item['teacher_id']
+            if (!filter_var($item['teacher_id'], FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_TEAHCER_ID';
+            if (!filter_var($item['subject_id'], FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_SUBJECT_ID';
+            if ($item['date_start'] != date('Y-m-d', strtotime($item['date_start']))) return 'ERROR_PARAMETER_DATE';
+            if ($item['date_end'] != date('Y-m-d', strtotime($item['date_end']))) return 'ERROR_PARAMETER_DATE';
+            if (!($item['day_week'] >= 1 && $item['day_week'] <= 7)) return 'ERROR_PARAMETER_DAY';
+
+            $regularLessons[] = [
+                'teacher_id' => $item['teacher_id'],
+                'subject_id' => $item['subject_id'],
+                'day'        => $item['day_week'],
+                'time'       => $item['time'],
+                'date_start' => $item['date_start'],
+                'date_end'   => $item['date_end']
             ];
+
+            try {
+
+                $query = $this->pdo->prepare("DELETE FROM `{$this->table_name}` WHERE client_id = :client_id AND subject_id = :subject_id AND date BETWEEN :date_start AND :date_end");
+                $query->execute([
+                    'client_id'     => $client_id,
+                    'subject_id'    => $item['subject_id'],
+                    'date_start'    => $item['date_start'],
+                    'date_end'      => $item['date_end']
+                ]);
+            } catch (PDOException $e) {
+                return 'QUERY_FAILED';
+            }
         }
-
-
-        $regularLessons = [
-            'date_start' => $client_getAbonement_result[0]['date_start'],
-            'date_end'   => $client_getAbonement_result[0]['date_end'],
-            'subject_id' => $client_getAbonement_result[0]['subject_id'],
-            'lessonsDays' => $lessonsDays
-        ];
-
-
-        if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
-        if (!is_array($regularLessons['lessonsDays']) || count($regularLessons['lessonsDays']) == 0) return 'ERROR_PARAMETER';
-
-        $date_start = $regularLessons['date_start'];
-        $date_end = $regularLessons['date_end'];
-        $subject_id = $regularLessons['subject_id'];
-
-        if ($date_start != date('Y-m-d', strtotime($date_start))) return 'ERROR_PARAMETER';
-        if ($date_end != date('Y-m-d', strtotime($date_end))) return 'ERROR_PARAMETER';
-
-        $lessonsDays = [];
-
-        foreach ($regularLessons['lessonsDays'] as $lessonDay) {
-            if (!($lessonDay['day'] >= 1 && $lessonDay['day'] <= 7)) return 'ERROR_PARAMETER';
-            $timestamp = strtotime($lessonDay['time']);
-            $time_arr = explode(':', $lessonDay['time']);
-            $time = $time_arr[0] . ':' . $time_arr[1];
-            if (!($timestamp !== false && date('H:i', $timestamp) === $time)) return 'ERROR_PARAMETER';
-
-            $lessonsDays[] = [
-                'day'   => $lessonDay['day'],
-                'time'  => $time,
-                'teacher_id' => $lessonDay['teacher_id'],
-            ];
-        }
-
-        $lessons_timetable = [];
-
-        $date_start = new DateTime($regularLessons['date_start']);
-        $date_end = new DateTime($regularLessons['date_end']);
-
-        $current_date = $date_start;
 
         try {
             $this->pdo->beginTransaction();
 
-            while ($current_date <= $date_end) {
-                $day_of_week = $current_date->format('w');
+            foreach ($regularLessons as $regular) {
+                $date_start = new DateTime($regular['date_start']);
+                $date_end = new DateTime($regular['date_end']);
 
-                foreach ($lessonsDays as $lesson) {
-                    if ($lesson['day'] == $day_of_week) {
-                        $lessons_timetable[] = [
-                            'date' => $current_date->format('Y-m-d'),
-                            'teacher_id' => $lesson['teacher_id'],
-                            'time' => $lesson['time'],
-                            'status_id' => 1,
-                            'subject_id' => $subject_id,
-                        ];
+                $current_date = $date_start;
+
+                while ($current_date <= $date_end) {
+                    $day_of_week = $current_date->format('w');
+
+                    if ($regular['day'] == $day_of_week) {
 
                         $query = $this->pdo->prepare("INSERT INTO `{$this->table_name}` (client_id, teacher_id, type, date, time, status_id, subject_id, comment) VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
 
-                        $query->execute([$client_id, $lesson['teacher_id'], 'individual', $current_date->format('Y-m-d'), $lesson['time'], '1', $subject_id, '']);
+                        $query->execute([$client_id, $regular['teacher_id'], 'individual', $current_date->format('Y-m-d'), $regular['time'], '1', $regular['subject_id'], '']);
                     }
+
+                    $current_date->modify('+1 day');
                 }
-                $current_date->modify('+1 day');
             }
 
             $this->pdo->commit();
 
-            return $lessons_timetable;
+            return $this->pdo->lastInsertId();
         } catch (PDOException $e) {
             $this->pdo->rollBack();
             return 'QUERY_FAILED';
@@ -120,20 +95,22 @@ class Lessons
         if (!filter_var($client_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER';
         if (empty($date_start)) {
             $date_start = date('Y-m-d');
+            $dateAt = strtotime('-1 month', strtotime($date_start));
+            $date_start = date('Y-m-d', $dateAt);
         } else {
             $dateObject = DateTime::createFromFormat('Y-m-d', $date_start);
-            if(!($dateObject !== false && $dateObject->format('Y-m-d') === $date_start)) {
+            if (!($dateObject !== false && $dateObject->format('Y-m-d') === $date_start)) {
                 return 'ERROR_PARAMETER';
             }
-
         }
 
         if (empty($date_end)) {
-            $dateAt = strtotime('+1 MONTH', strtotime($date_end));
+            $date_end = date('Y-m-d');
+            $dateAt = strtotime('+1 month', strtotime($date_end));
             $date_end = date('Y-m-d', $dateAt);
         } else {
             $dateObject = DateTime::createFromFormat('Y-m-d', $date_end);
-            if(!($dateObject !== false && $dateObject->format('Y-m-d') === $date_end)) {
+            if (!($dateObject !== false && $dateObject->format('Y-m-d') === $date_end)) {
                 return 'ERROR_PARAMETER';
             }
         }
@@ -147,13 +124,13 @@ class Lessons
             $query->execute();
 
             return $query->fetchAll(PDO::FETCH_ASSOC);
-
         } catch (PDOException $e) {
             return 'QUERY_FAILED';
         }
     }
 
-    public function create($lesson) {
+    public function create($lesson)
+    {
         $client_id = $lesson['client_id'];
         $teacher_id = $lesson['teacher_id'];
         $type = $lesson['type'];
@@ -168,6 +145,7 @@ class Lessons
         if (!filter_var($status_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_STATUS_ID';
         if (!filter_var($subject_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_SUBJECT_ID';
         if (!in_array($type, ['individual'])) return 'ERROR_PARAMETER_TYPE';
+
         $dateObj = DateTime::createFromFormat('Y-m-d', $date);
         if ($dateObj === false || $dateObj->format('Y-m-d') !== $date) return 'ERROR_PARAMETER_DATE';
         $timeObj = DateTime::createFromFormat('H:i', $time);
@@ -189,15 +167,14 @@ class Lessons
             $query->execute();
 
             return $this->pdo->lastInsertId();
-
-        } catch(PDOException $e) {
+        } catch (PDOException $e) {
             return 'QUERY_FAILED';
         }
-
     }
 
-    public function read($id) {
-        if(!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_ID';
+    public function read($id)
+    {
+        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_ID';
 
         try {
             $query = $this->pdo->prepare("SELECT * FROM `{$this->table_name}` WHERE id = :id ORDER BY id DESC LIMIT 1");
@@ -213,8 +190,19 @@ class Lessons
         }
     }
 
-    public function update($id, $data) {
-        if(!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_ID';
+    public function statusList() {
+        try {
+            $query = $this->pdo->prepare("SELECT * FROM `lesson_status_list`");
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
+    }
+
+    public function update($id, $data)
+    {
+        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_ID';
 
         $teacher_id = $data['teacher_id'];
         $type = $data['type'];
@@ -249,14 +237,32 @@ class Lessons
             $query->execute();
 
             return $query->rowCount();
-
-        } catch(PDOException $e) {
+        } catch (PDOException $e) {
             return 'QUERY_FAILED';
         }
     }
 
-    public function delete($id) {
-        if(!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_ID';
+    public function setStatus($id, $status_id)
+    {
+        if(!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_LESSON_ID';
+        if(!filter_var($status_id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_STATUS_ID';
+
+        try {
+
+            $query = $this->pdo->prepare("UPDATE `{$this->table_name}` SET status_id = :status_id WHERE id = :id");
+            $query->bindValue(':status_id', $status_id);
+            $query->bindValue(':id', $id);
+            $query->execute();
+            return $query->rowCount();
+
+        } catch (PDOException $e) {
+            return 'QUERY_FAILED';
+        }
+    }
+
+    public function delete($id)
+    {
+        if (!filter_var($id, FILTER_VALIDATE_INT)) return 'ERROR_PARAMETER_ID';
 
         try {
             $query = $this->pdo->prepare("DELETE FROM `{$this->table_name}` WHERE id = ?");
@@ -266,5 +272,4 @@ class Lessons
             return 'QUERY_FAILED';
         }
     }
-
 }
